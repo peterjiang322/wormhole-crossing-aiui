@@ -1,0 +1,30 @@
+
+> stargate-flight-aiui@1.0.0 test
+> node --test tests/*.test.mjs
+
+✔ projection responds to yaw/pitch and depth, clips points behind camera (0.464584ms)
+✔ a round has 12 reachable gates, lasts 45 seconds and resets cleanly (1.655875ms)
+✔ pause freezes gameplay; misses are resolved once without ending the round (0.571625ms)
+✔ quaternion relative rotation wraps at ±180 and rejects invalid values (0.295958ms)
+✔ looking toward a gate steers toward it; looking straight retains lateral position (0.175417ms)
+✔ scene uses the AIUI 448 by 352 full-screen reference viewport (0.04775ms)
+✔ actual Ink page uses one input owner, pauses and hides timers/sensors (3.799125ms)
+✔ actual Ink page never intercepts the host Backspace exit (0.446416ms)
+✔ renderer emits finite Canvas commands throughout a complete round and extreme head poses (36.828125ms)
+✔ menu fourth item scrolls into view and third restores first viewport (0.175708ms)
+✔ sensor detaches and ignores a late reading after stop (0.596542ms)
+✔ sensor rejects invalid quaternion and detects absence and stream loss (0.091125ms)
+✔ gyro fallback integrates finite short samples without integrating gaps (0.082417ms)
+✔ controller calibrates, pauses on input loss and hides all resources (0.613667ms)
+✔ keyboard mode and demo finish, demo is explicitly marked, restart clears scores (2.06025ms)
+✔ slow rendering does not extend a 45-second flight (0.933083ms)
+✔ switching an automatic demonstration to keys starts a fresh manual round (0.562083ms)
+✔ resume preserves flight and paused wall time is excluded (0.255375ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 92.906

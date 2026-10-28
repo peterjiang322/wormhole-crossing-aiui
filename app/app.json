@@ -1,0 +1,6 @@
+{
+ "name":"星门穿梭","version":"1.0.0","description":"45秒头动透视飞行展示：绿色线框隧道、12道星门和连击反馈。",
+ "pages":["pages/index/index"],"permissions":[],"inkVersion":"^0.19.1","icon":"assets/logo.png",
+ "window":{"navigationBarTitleText":"星门穿梭","viewport":{"width":"device-width"}},
+ "agentPrompt":"当用户在商场路演、科技展台或短时娱乐中，希望体验眼镜头动透视和穿门飞行小游戏时，调用星门穿梭；使用前需可运行全屏AIUI与Canvas的Rokid眼镜，头动模式另需宿主提供有效姿态传感器或陀螺仪，缺失时可用方向键模式或标注为自动演示的观赏模式。可响应‘让我体验头动飞行’‘打开星门穿梭’‘玩一局穿门小游戏’等请求。应用离线运行，不依赖相机、录音或大模型；不提供双目立体、真实空间定位、身体位移追踪或后台语音监听。"
+}

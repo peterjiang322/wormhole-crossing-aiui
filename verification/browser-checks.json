@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-28",
+  "companion": {
+    "version": "1.0.0",
+    "sharedEngine": true,
+    "demoResult": {
+      "duration": 45,
+      "gates": 12,
+      "score": 2700,
+      "label": "自动演示 · 不计成绩"
+    },
+    "menu": {
+      "fourthFocus": 3,
+      "fourthScrollLeft": 142,
+      "thirdFocus": 2,
+      "thirdScrollLeft": 0
+    },
+    "manualPauseResume": "observed",
+    "errors": []
+  },
+  "officialReader": {
+    "ink": "0.19.1",
+    "source": "dist/stargate-flight.aix",
+    "viewport": "448x352",
+    "ready": true,
+    "calibration": true,
+    "fullDemo": true,
+    "result": {
+      "gates": 12,
+      "bestCombo": 12,
+      "label": "自动演示完成 · 不计成绩"
+    },
+    "replay": true,
+    "sound": "unavailable in Reader; visible fallback; game continues",
+    "realSensors": false
+  },
+  "device": {
+    "tested": false,
+    "reason": "aix device: spawn adb ENOENT; no connected Rokid"
+  }
+}

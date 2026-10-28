@@ -1,0 +1,46 @@
+{
+  "series": "Spatial Joy",
+  "id": "stargate-flight",
+  "name": "星门穿梭",
+  "englishName": "Stargate Flight",
+  "version": "1.0.0",
+  "intentDescription": "当用户在商场路演、科技展台或短时娱乐中，希望体验眼镜头动透视和穿门飞行小游戏时，调用星门穿梭；使用前需可运行全屏AIUI与Canvas的Rokid眼镜，头动模式另需宿主提供有效姿态传感器或陀螺仪，缺失时可用方向键模式或标注为自动演示的观赏模式。可响应‘让我体验头动飞行’‘打开星门穿梭’‘玩一局穿门小游戏’等请求。应用离线运行，不依赖相机、录音或大模型；不提供双目立体、真实空间定位、身体位移追踪或后台语音监听。",
+  "logo": {
+    "path": "assets/logo.png",
+    "source": "built-in image_gen, original octagonal portal/spacecraft icon"
+  },
+  "benefit": "转动视角，穿越星门",
+  "usps": [
+    "头动透视",
+    "45秒挑战",
+    "离线体验"
+  ],
+  "audience": [
+    "商场路演观众",
+    "科技展参观者",
+    "AI眼镜首次体验者"
+  ],
+  "problem": "短时展台体验需要快速理解头动交互",
+  "features": [
+    "头动透视单关飞行",
+    "45秒12道光门与连击",
+    "暂停/重校准/方向反转",
+    "按键回退和标注自动演示"
+  ],
+  "glassesAdvantage": "原地小幅转头直接改变眼前虚拟场景视角，无需手柄",
+  "scenarios": [
+    "商场线下路演",
+    "科技展台体验"
+  ],
+  "background": "黑底、绿色线框太空隧道、八边星门与星点",
+  "boundaries": [
+    "无大模型/语音/拍照/联网",
+    "不是双目立体/6DoF/身体位移追踪",
+    "自动演示不作为真实成绩",
+    "成绩和设置仅本次会话内存",
+    "指定Rokid真机效果待验收"
+  ],
+  "templateVersion": "spatial-joy-hud-v1",
+  "runtime": "AIUI Ink ^0.19.1",
+  "eventDates": "2026-11-27/2026-11-29"
+}
