@@ -1,0 +1,10 @@
+{
+  "repository": "peterjiang322/stargate-flight-aiui",
+  "url": "https://github.com/peterjiang322/stargate-flight-aiui",
+  "private": true,
+  "branch": "main",
+  "releaseCommit": "a73fa6f9b1adfe5641df32beefc84299e6ab4406",
+  "sourceBranch": "codex/initial-release",
+  "verification": "GitHub REST repository private=true; git push HEAD:main succeeded; remote main SHA checked separately after delivery-record commit",
+  "artifactSha256": "26741639a85a25fce2aab30a7cd53b1f7822a21b9b1933fd49a885ee363a0b9c"
+}
