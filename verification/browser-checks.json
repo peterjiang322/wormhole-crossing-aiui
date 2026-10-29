@@ -37,5 +37,17 @@
   "device": {
     "tested": false,
     "reason": "aix device: spawn adb ENOENT; no connected Rokid"
+  },
+  "menuFix": {
+    "version": "1.0.1",
+    "date": "2026-10-29",
+    "adapter": "MenuMotion: controller numeric target -> clipped native track left",
+    "animationTargetMs": 180,
+    "fourthOffset": 142,
+    "thirdOffset": 0,
+    "browserObserved": true,
+    "readerObserved": true,
+    "physicalRokidTested": false,
+    "rapidReverseAndHide": "23 local tests pass"
   }
 }

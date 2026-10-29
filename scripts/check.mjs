@@ -11,7 +11,7 @@ for(const file of walk('app').filter(f=>/\.(js|ink)$/.test(f))){let source=fs.re
   check(!/\bwx:|\bv-if|\bv-for/.test(parts.page),'use ink: directives');
   check(!/(?:^|[;{\s])(?:animation(?:-[\w-]+)?|visibility|font-variant|white-space|word-break)\s*:|position\s*:\s*sticky/.test(parts.style),'unsupported WXSS');
   for(const [,event]of parts.page.matchAll(/bindtap="(\w+)"/g))check(new RegExp('\\b'+event+'\\s*\\(').test(js),'missing event '+event);
-  check(parts.page.includes('scroll-left="{{menuScrollLeft}}"')&&!parts.page.includes('scroll-into-view='),'numeric menu scroll');
+  check(parts.page.includes('left: {{menuTrackLeft}}px')&&!parts.page.includes('scroll-into-view='),'numeric translated menu rail');
  }
  new vm.SourceTextModule(js,{identifier:file});checks++;
  for(const [,importPath]of js.matchAll(/from\s*['"]([^'"]+)['"]/g))if(importPath.startsWith('.'))check(fs.existsSync(path.resolve(path.dirname(file),importPath)),'missing import '+file+' '+importPath);

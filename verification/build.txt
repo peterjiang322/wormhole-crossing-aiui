@@ -1,38 +1,43 @@
 
-> stargate-flight-aiui@1.0.0 build
+> stargate-flight-aiui@1.0.1 build
 > node scripts/package.mjs
 
-Static checks passed: 47
-(node:72547) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+Static checks passed: 50
+(node:81011) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
-✔ projection responds to yaw/pitch and depth, clips points behind camera (0.499792ms)
-✔ a round has 12 reachable gates, lasts 45 seconds and resets cleanly (1.276458ms)
-✔ pause freezes gameplay; misses are resolved once without ending the round (0.347916ms)
-✔ quaternion relative rotation wraps at ±180 and rejects invalid values (0.1075ms)
-✔ looking toward a gate steers toward it; looking straight retains lateral position (0.092417ms)
-✔ scene uses the AIUI 448 by 352 full-screen reference viewport (0.035833ms)
-✔ actual Ink page uses one input owner, pauses and hides timers/sensors (3.438125ms)
-✔ actual Ink page never intercepts the host Backspace exit (0.800833ms)
-✔ renderer emits finite Canvas commands throughout a complete round and extreme head poses (39.09525ms)
-✔ menu fourth item scrolls into view and third restores first viewport (0.211875ms)
-✔ sensor detaches and ignores a late reading after stop (0.531958ms)
-✔ sensor rejects invalid quaternion and detects absence and stream loss (0.086625ms)
-✔ gyro fallback integrates finite short samples without integrating gaps (0.080458ms)
-✔ controller calibrates, pauses on input loss and hides all resources (0.413458ms)
-✔ keyboard mode and demo finish, demo is explicitly marked, restart clears scores (2.39075ms)
-✔ slow rendering does not extend a 45-second flight (0.879042ms)
-✔ switching an automatic demonstration to keys starts a fresh manual round (1.13075ms)
-✔ resume preserves flight and paused wall time is excluded (0.1355ms)
-ℹ tests 18
+✔ projection responds to yaw/pitch and depth, clips points behind camera (0.4845ms)
+✔ a round has 12 reachable gates, lasts 45 seconds and resets cleanly (4.2515ms)
+✔ pause freezes gameplay; misses are resolved once without ending the round (0.396542ms)
+✔ quaternion relative rotation wraps at ±180 and rejects invalid values (0.422166ms)
+✔ looking toward a gate steers toward it; looking straight retains lateral position (0.2515ms)
+✔ scene uses the AIUI 448 by 352 full-screen reference viewport (0.095459ms)
+✔ fourth item moves the full rail left and settles within 180ms (2.472833ms)
+✔ returning to third restores the first item without relying on native scroll (0.322167ms)
+✔ fast direction changes animate from current position and hidden callbacks cannot update (0.371292ms)
+✔ duplicate target does not restart animation; reset clears offset and timer (0.187375ms)
+✔ actual Ink page uses one input owner, pauses and hides timers/sensors (7.825333ms)
+✔ actual Ink page never intercepts the host Backspace exit (0.6415ms)
+✔ renderer emits finite Canvas commands throughout a complete round and extreme head poses (50.4245ms)
+✔ menu fourth item scrolls into view and third restores first viewport (0.190166ms)
+✔ actual Ink menu animates fourth item and cancels motion on hide (0.578292ms)
+✔ sensor detaches and ignores a late reading after stop (0.541084ms)
+✔ sensor rejects invalid quaternion and detects absence and stream loss (0.239167ms)
+✔ gyro fallback integrates finite short samples without integrating gaps (0.350125ms)
+✔ controller calibrates, pauses on input loss and hides all resources (1.12925ms)
+✔ keyboard mode and demo finish, demo is explicitly marked, restart clears scores (2.397875ms)
+✔ slow rendering does not extend a 45-second flight (2.073708ms)
+✔ switching an automatic demonstration to keys starts a fresh manual round (2.055ms)
+✔ resume preserves flight and paused wall time is excluded (0.253917ms)
+ℹ tests 23
 ℹ suites 0
-ℹ pass 18
+ℹ pass 23
 ℹ fail 0
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 86.954916
+ℹ duration_ms 133.886708
 Scanning source files in app
-Collected 13 source files
+Collected 14 source files
 Loading WASM engine
 WASM engine ready
 Creating WASM source builder
@@ -51,17 +56,18 @@ Optimized lib/controller.js: 4.24 KB -> 3.74 KB (saved 505 bytes)
 Optimized lib/flight.js: 2.87 KB -> 2.44 KB (saved 440 bytes)
 Optimized lib/imu.js: 4.44 KB -> 2.66 KB (saved 1.78 KB)
 Optimized lib/menu-controller.js: 5.36 KB -> 3.70 KB (saved 1.66 KB)
+Optimized lib/menu-motion.js: 1.11 KB -> 820 bytes (saved 314 bytes)
 Optimized lib/pose.js: 2.96 KB -> 2.55 KB (saved 426 bytes)
 Optimized lib/renderer.js: 4.90 KB -> 3.49 KB (saved 1.41 KB)
 Adding file: pages/index/index.ink
 Finalizing package archive
-Package created: dist/stargate-flight.aix (871.75 KB)
+Package created: dist/stargate-flight.aix (872.34 KB)
 Contents of dist/stargate-flight.aix:
 AGENTS.md: 588 bytes (compressed: 485 bytes)
-META-INF/aix/manifest.json: 1.78 KB (compressed: 941 bytes)
+META-INF/aix/manifest.json: 1.89 KB (compressed: 987 bytes)
 VERSION: 36 bytes (compressed: 41 bytes)
 app.js: 43 bytes (compressed: 48 bytes)
-app.json: 937 bytes (compressed: 689 bytes)
+app.json: 1001 bytes (compressed: 697 bytes)
 assets/finish.wav: 16.40 KB (compressed: 14.82 KB)
 assets/gate.wav: 8.22 KB (compressed: 7.47 KB)
 assets/logo.png: 833.78 KB (compressed: 833.78 KB)
@@ -69,7 +75,8 @@ lib/controller.js: 3.74 KB (compressed: 1.38 KB)
 lib/flight.js: 2.44 KB (compressed: 1.21 KB)
 lib/imu.js: 2.66 KB (compressed: 928 bytes)
 lib/menu-controller.js: 3.70 KB (compressed: 1.44 KB)
+lib/menu-motion.js: 820 bytes (compressed: 392 bytes)
 lib/pose.js: 2.55 KB (compressed: 1.14 KB)
 lib/renderer.js: 3.49 KB (compressed: 1.69 KB)
-pages/index/index.ink: 13.15 KB (compressed: 4.21 KB)
-Real AIX artifact ready: 892669 bytes
+pages/index/index.ink: 13.44 KB (compressed: 4.25 KB)
+Real AIX artifact ready: 893274 bytes

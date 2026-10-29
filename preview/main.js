@@ -1,19 +1,21 @@
 import {Controller} from '../app/lib/controller.js';
 import {drawScene} from '../app/lib/renderer.js';
 import {MenuController} from '../app/lib/menu-controller.js';
+import {MenuMotion} from '../app/lib/menu-motion.js';
 const $=id=>document.getElementById(id),stage=$('stage'),ctx=$('scene').getContext('2d');
 let mouse={yaw:0,pitch:0},center={yaw:0,pitch:0},settings=false,soundOn=true,yawSign=1,pitchSign=1,lastMenu='',previousPhase='',frames=0,fpsAt=performance.now(),raf=null,audio;
 const pointer={mode:'orientation',start(){center={...mouse};},stop(){},healthy:()=>true,timedOut:()=>false,recenter(){center={...mouse};},get:()=>({yaw:(mouse.yaw-center.yaw)*yawSign,pitch:(mouse.pitch-center.pitch)*pitchSign})};
 function sound(event){if(!soundOn||event==='miss')return;try{audio=audio||new AudioContext();const o=audio.createOscillator(),g=audio.createGain();o.type='sine';o.frequency.setValueAtTime(event==='hit'?660:880,audio.currentTime);o.frequency.exponentialRampToValueAtTime(event==='hit'?990:1320,audio.currentTime+.13);g.gain.setValueAtTime(.04,audio.currentTime);g.gain.exponentialRampToValueAtTime(.001,audio.currentTime+.2);o.connect(g).connect(audio.destination);o.start();o.stop(audio.currentTime+.21);}catch(_){}}
+const motion=new MenuMotion({emit:patch=>{$('buttons').style.left=patch.menuTrackLeft+'px';}});
 const menu=new MenuController({Sensor:null,emit(patch){
  const root=$('buttons');root.replaceChildren();root.style.width=patch.buttonRowWidth+'px';
  for(const item of patch.menuButtons){const b=document.createElement('button');b.textContent=item.label;b.style.width=patch.buttonWidth+'px';b.className=item.className;b.dataset.id=item.id;b.onclick=()=>menu.tap(item.id);root.append(b);}
- $('rail').scrollLeft=patch.menuScrollLeft||0;
+ motion.to(patch.menuScrollLeft);
 }});
 const game=new Controller({input:pointer,now:()=>performance.now(),emit:renderUI,sound});
 function begin(mode){settings=false;menu.hide();lastMenu='';mouse={yaw:0,pitch:0};center={...mouse};game.start(mode);}
 function syncMenu(){
- const key=settings?'settings':game.phase;if(lastMenu===key)return;lastMenu=key;menu.hide();
+ const key=settings?'settings':game.phase;if(lastMenu===key)return;lastMenu=key;menu.hide();motion.reset();
  if(['flying','calibrating'].includes(game.phase))return;
  let buttons;
  if(settings)buttons=[{id:'yaw',label:yawSign===1?'反转左右':'恢复左右',run(){yawSign*=-1;lastMenu='';syncMenu();}},{id:'pitch',label:pitchSign===1?'反转上下':'恢复上下',run(){pitchSign*=-1;lastMenu='';syncMenu();}},{id:'sound',label:soundOn?'关闭音效':'开启音效',run(){soundOn=!soundOn;lastMenu='';syncMenu();}},{id:'close',label:'返回',run(){settings=false;lastMenu='';renderUI();}}];
@@ -42,7 +44,7 @@ $('pause').onclick=()=>game.pause();$('recenter').onclick=()=>{game.recenter();}
 document.addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Enter','Escape',' '].includes(e.key))return;e.preventDefault();if(game.phase==='flying'){if(e.key.startsWith('Arrow')&&game.mode==='head'){game.mode='keys';game.keyPose={...game.filtered};}game.key(e.key);}else if(game.phase==='calibrating'){if(e.key==='Enter')game.pause('校准已暂停');}else menu.key({code:e.key,preventDefault(){}});});
 function resize(){const shell=document.querySelector('.display-shell'),width=shell.clientWidth-28,scale=width/448;stage.style.transform='scale('+scale+')';shell.style.height=(352*scale+28)+'px';}new ResizeObserver(resize).observe(document.querySelector('.display-shell'));resize();
 function frame(time){game.tick();const active=['flying','paused','result'].includes(game.phase);drawScene(ctx,game.flight,active?game.flight.pose:{yaw:Math.sin(time/5000)*.035,pitch:0},time/1000,{phase:game.phase,menu:!['flying','paused'].includes(game.phase)});frames++;if(time-fpsAt>1000){$('fps').textContent=Math.round(frames*1000/(time-fpsAt))+' FPS';fpsAt=time;frames=0;}raf=requestAnimationFrame(frame);}
-function show(){lastMenu='';game.show();raf=requestAnimationFrame(frame);}document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(raf);game.hide();menu.hide();audio?.suspend();}else{audio?.resume();show();}});window.addEventListener('pagehide',()=>{cancelAnimationFrame(raf);game.hide();menu.hide();audio?.close();});
+function show(){lastMenu='';game.show();raf=requestAnimationFrame(frame);}document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(raf);game.hide();menu.hide();motion.stop();audio?.suspend();}else{audio?.resume();show();}});window.addEventListener('pagehide',()=>{cancelAnimationFrame(raf);game.hide();menu.hide();motion.stop();audio?.close();});
 // Read-only diagnostics for local acceptance; no simulated results or time acceleration.
-window.stargate={get state(){return {phase:game.phase,mode:game.mode,elapsed:game.flight.elapsed,hits:game.flight.hits,score:game.flight.score,menuScroll:$('rail').scrollLeft,focus:menu.focus};}};
+window.stargate={get state(){return {phase:game.phase,mode:game.mode,elapsed:game.flight.elapsed,hits:game.flight.hits,score:game.flight.score,menuScroll:Math.round(motion.position),focus:menu.focus};}};
 show();

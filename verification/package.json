@@ -2,7 +2,7 @@
   "tool": "@yodaos-pkg/aix-cli 0.10.1",
   "engine": "^0.19.1",
   "file": "dist/stargate-flight.aix",
-  "bytes": 892669,
-  "sha256": "26741639a85a25fce2aab30a7cd53b1f7822a21b9b1933fd49a885ee363a0b9c",
+  "bytes": 893274,
+  "sha256": "1e6496ac85dd237df14248e8b141bcdccfd8ebf068b7433791e04b04201ab3d9",
   "deviceTested": false
 }

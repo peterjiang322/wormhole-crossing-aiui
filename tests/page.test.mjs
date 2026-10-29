@@ -1,14 +1,16 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
-import {PoseInput} from '../app/lib/pose.js';import {Controller} from '../app/lib/controller.js';import {drawScene} from '../app/lib/renderer.js';import {MenuController} from '../app/lib/menu-controller.js';
+import {PoseInput} from '../app/lib/pose.js';import {Controller} from '../app/lib/controller.js';import {drawScene} from '../app/lib/renderer.js';import {MenuMotion} from '../app/lib/menu-motion.js';
+import {MenuController} from '../app/lib/menu-controller.js';
 function context(){return new Proxy({calls:0},{get(target,key){if(key in target)return target[key];return (...args)=>{for(const v of args)if(typeof v==='number')assert.ok(Number.isFinite(v),'nonfinite draw argument '+key);target.calls++;};},set(target,key,v){target[key]=v;return true;}});}
 function pageHarness(){
  const code=fs.readFileSync(new URL('../app/pages/index/index.ink',import.meta.url),'utf8').match(/<script setup>([\s\S]*?)<\/script>/)[1].replace(/^import .*;$/gm,'').replace('export default','return');
  let now=0;const active=new Set(),timers=new Map();let serial=0;const ctx=context();
  class Sensor{constructor(){this.events={};}addEventListener(k,f){this.events[k]=f;}removeEventListener(k){delete this.events[k];}start(){active.add(this);}stop(){active.delete(this);}read(){this.quaternion=[0,0,0,1];this.x=0;this.y=0;this.events.reading?.();}}
- const build=new Function('wx','PoseInput','Controller','drawScene','MenuController','Gyroscope','AbsoluteOrientationSensor','setInterval','clearInterval','Date','Sound',code);
+ const build=new Function('wx','PoseInput','Controller','drawScene','MenuController','MenuMotion','Gyroscope','AbsoluteOrientationSensor','setInterval','clearInterval','Date','Sound',code);
  class TestInput extends PoseInput{constructor(options){super({...options,now:()=>now});}}
  class TestController extends Controller{constructor(options){super({...options,now:()=>now});}}
- const page=build({createCanvasContext:()=>ctx},TestInput,TestController,drawScene,MenuController,Sensor,Sensor,fn=>{timers.set(++serial,fn);return serial;},id=>timers.delete(id),{now:()=>now},undefined);
+ class TestMotion extends MenuMotion{constructor(options){super({...options,now:()=>now,schedule:fn=>{timers.set(++serial,fn);return serial;},cancel:id=>timers.delete(id)});}}
+ const page=build({createCanvasContext:()=>ctx},TestInput,TestController,drawScene,MenuController,TestMotion,Sensor,Sensor,fn=>{timers.set(++serial,fn);return serial;},id=>timers.delete(id),{now:()=>now},undefined);
  page.setData=()=>{}; // Deliberately asynchronous/no echo: business must never read UI data back.
  page.onLoad();return {page,ctx,active,timers,setNow(v){now=v;}};
 }
@@ -30,4 +32,8 @@ test('renderer emits finite Canvas commands throughout a complete round and extr
 });
 test('menu fourth item scrolls into view and third restores first viewport',()=>{
  let patch;const m=new MenuController({Sensor:null,emit:p=>patch=p});m.configure({buttons:[1,2,3,4].map(id=>({id,label:String(id),run(){}}))});m.show();m.move(3);assert.ok(patch.menuScrollLeft>0);m.move(-1);assert.equal(patch.menuScrollLeft,0);m.hide();
+});
+
+test('actual Ink menu animates fourth item and cancels motion on hide',()=>{
+ const h=pageHarness(),p=h.page;p.onShow();p.onReady();p.menu.move(3);assert.equal(h.timers.size,2);h.setNow(180);for(const fn of [...h.timers.values()])fn();assert.equal(p.menuMotion.position,142);p.menu.move(-1);assert.equal(h.timers.size,2);const late=[...h.timers.values()].at(-1);p.onHide();assert.equal(h.timers.size,0);late();assert.equal(h.timers.size,0);
 });

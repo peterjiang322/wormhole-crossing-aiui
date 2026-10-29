@@ -7,21 +7,23 @@ import {PoseInput} from '../../lib/pose.js';
 import {Controller} from '../../lib/controller.js';
 import {drawScene} from '../../lib/renderer.js';
 import {MenuController} from '../../lib/menu-controller.js';
+import {MenuMotion} from '../../lib/menu-motion.js';
 
 export default {
- data:{phase:'ready',mode:'head',message:'小幅转头 · 穿越星门',seconds:45,score:0,hits:0,combo:0,bestCombo:0,title:'',countdown:2,feedback:'',sensor:'',menuButtons:[],buttonWidth:132,buttonRowWidth:416,menuScrollLeft:0,menuHelp:'',soundLabel:'音效开',errorText:'',settings:false},
+ data:{phase:'ready',mode:'head',message:'小幅转头 · 穿越星门',seconds:45,score:0,hits:0,combo:0,bestCombo:0,title:'',countdown:2,feedback:'',sensor:'',menuButtons:[],buttonWidth:132,buttonRowWidth:416,menuScrollLeft:0,menuTrackLeft:0,menuHelp:'',soundLabel:'音效开',errorText:'',settings:false},
  onLoad(){
   this._visible=false;this._ready=false;this._generation=0;this._soundOn=true;this._settings=false;this._renderFailures=0;this._canvasAttempts=0;this._menuPhase='';this._sounds={};
   this.input=new PoseInput({Orientation:typeof AbsoluteOrientationSensor==='undefined'?null:AbsoluteOrientationSensor,Gyro:typeof Gyroscope==='undefined'?null:Gyroscope,report:message=>{if(this._visible)this.setData({errorText:message});}});
   this.game=new Controller({input:this.input,emit:patch=>{if(!this._visible)return;this.setData(patch);this.syncMenu(patch.phase);},sound:event=>this.playSound(event)});
-  this.menu=new MenuController({Sensor:typeof Gyroscope==='undefined'?null:Gyroscope,emit:patch=>{if(this._visible)this.setData(patch);},report:error=>this.setData({errorText:error.message||String(error)})});
+  this.menuMotion=new MenuMotion({emit:patch=>{if(this._visible)this.setData(patch);}});
+  this.menu=new MenuController({Sensor:typeof Gyroscope==='undefined'?null:Gyroscope,emit:patch=>{if(this._visible){this.setData(patch);this.menuMotion.to(patch.menuScrollLeft);}},report:error=>this.setData({errorText:error.message||String(error)})});
  },
  onShow(){this._visible=true;this._generation++;this._menuPhase='';this._settings=false;this.setData({settings:false,errorText:''});this.game.show();if(this._ready)this.beginRender();},
  onReady(){this._ready=true;if(this._visible)this.beginRender();},
  onHide(){this.cleanup();},onUnload(){this.cleanup();},
  syncMenu(phase){
   const id=this._settings?'settings':phase;if(this._menuPhase===id)return;this._menuPhase=id;
-  this.menu.hide();
+  this.menu.hide();this.menuMotion.reset();
   if(phase==='flying'||phase==='calibrating'){return;}
   let buttons;
   if(this._settings){buttons=[{id:'yaw',label:this.input.yawSign===1?'反转左右':'恢复左右',run:()=>this.flipAxis('yaw')},{id:'pitch',label:this.input.pitchSign===1?'反转上下':'恢复上下',run:()=>this.flipAxis('pitch')},{id:'sound',label:this._soundOn?'关闭音效':'开启音效',run:()=>this.toggleSound()},{id:'close',label:'返回',run:()=>this.closeSettings()}];}
@@ -68,7 +70,7 @@ export default {
   try{if(typeof Sound==='undefined')return;const name=event==='finish'?'finish':'gate';let sound=this._sounds[name];if(!sound){sound=new Sound('/assets/'+name+'.wav');sound.volume=.35;this._sounds[name]=sound;}sound.play();}catch(e){this.setData({errorText:'音效不可用 · 游戏可继续'});}
  },
  stopSounds(){for(const name of Object.keys(this._sounds)){try{this._sounds[name].stop();this._sounds[name].destroy();}catch(_){}}this._sounds={};},
- cleanup(){this._visible=false;this._generation++;if(this._timer)clearInterval(this._timer);this._timer=null;this._ctx=null;this.menu.hide();this.game.hide();this.stopSounds();}
+ cleanup(){this._visible=false;this._generation++;if(this._timer)clearInterval(this._timer);this._timer=null;this._ctx=null;this.menu.hide();this.menuMotion.stop();this.game.hide();this.stopSounds();}
 };
 </script>
 <page>
@@ -94,7 +96,7 @@ export default {
   <view class="intro result" style="display: {{phase === 'result' ? 'flex' : 'none'}}"><text class="eyebrow">{{mode === 'demo' ? '自动演示完成 · 不计成绩' : 'MISSION COMPLETE'}}</text><text class="hero small">{{mode === 'demo' ? '星空等你来' : title}}</text><text class="result-score">{{mode === 'demo' ? '45 秒星际之旅' : score + ' PTS'}}</text><text class="sub">穿越 {{hits}} / 12 · 最佳连击 {{bestCombo}}</text></view>
   <view class="intro" style="display: {{phase === 'error' ? 'flex' : 'none'}}"><text class="hero small">画布暂不可用</text><text class="sub">{{message}}</text></view>
   <view class="menu" style="display: {{phase !== 'flying' && phase !== 'calibrating' ? 'flex' : 'none'}}">
-   <scroll-view class="menu-rail" scroll-x="true" scroll-left="{{menuScrollLeft}}"><view class="menu-row" style="width: {{buttonRowWidth}}px"><card ink:for="{{menuButtons}}" ink:key="id" class="menu-card" style="width: {{buttonWidth}}px" data-id="{{item.id}}" bindtap="onAction"><view class="{{item.className}}"><text>{{item.label}}</text></view></card></view></scroll-view>
+   <view class="menu-rail"><view class="menu-row" style="width: {{buttonRowWidth}}px; left: {{menuTrackLeft}}px"><card ink:for="{{menuButtons}}" ink:key="id" class="menu-card" style="width: {{buttonWidth}}px" data-id="{{item.id}}" bindtap="onAction"><view class="{{item.className}}"><text>{{item.label}}</text></view></card></view></view>
    <text class="menu-help">{{menuHelp}}</text>
   </view>
   <text class="error-text" style="display: {{errorText ? 'flex' : 'none'}}; top: {{phase === 'flying' ? 86 : 332}}px">{{errorText}}</text>
@@ -112,7 +114,7 @@ page { background-color: #000000; color: #40FF5E; }
 .eyebrow { font-size: 10px; line-height: 16px; color: rgba(64,255,94,0.6); }.hero { font-size: 48px; line-height: 58px; font-weight: bold; }.small { font-size: 34px; line-height: 42px; }.sub { font-size: 17px; line-height: 24px; text-align: center; }
 .chips { display: flex; flex-direction: row; gap: 20px; font-size: 12px; line-height: 24px; color: rgba(64,255,94,0.6); }.result-score { font-size: 25px; line-height: 32px; font-weight: bold; }
 .menu { position: absolute; left: 16px; top: 240px; width: 416px; display: flex; flex-direction: column; gap: 8px; }
-.menu-rail { width: 416px; height: 64px; flex-shrink: 0; }.menu-row { display: flex; flex-direction: row; gap: 10px; height: 64px; }
+.menu-rail { position: relative; overflow: hidden; width: 416px; height: 64px; flex-shrink: 0; }.menu-row { position: absolute; top: 0; flex-shrink: 0; display: flex; flex-direction: row; gap: 10px; height: 64px; }
 .menu-card { --card-padding: 0px; --card-border-width: 0px; border-width: 0px; height: 64px; min-height: 64px; margin: 0; flex-shrink: 0; box-sizing: border-box; }
 .menu-action { display: flex; align-items: center; justify-content: center; height: 64px; padding: 6px 4px; border: 1px solid rgba(64,255,94,0.4); border-radius: 4px; color: rgba(64,255,94,0.6); font-size: 18px; line-height: 24px; box-sizing: border-box; background-color: #000000; }.selected { border-color: #40FF5E; color: #40FF5E; background-color: rgba(64,255,94,0.08); }
 .menu-help { font-size: 11px; line-height: 18px; text-align: center; color: rgba(64,255,94,0.6); }
