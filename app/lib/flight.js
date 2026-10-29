@@ -1,3 +1,4 @@
+import {getLevel,generateGates} from './levels.js';
 export const WIDTH=448, HEIGHT=352, DURATION=45, SPEED=9;
 export const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
 export function project(point, camera={}) {
@@ -11,10 +12,11 @@ export function project(point, camera={}) {
  return {x:WIDTH/2+260*rx/depth,y:HEIGHT/2-260*ry/depth,scale:260/depth,z:depth};
 }
 export class Flight {
- constructor(){this.phase='ready';this.elapsed=0;this.ship={x:0,y:0};this.pose={yaw:0,pitch:0};this.gates=[];this.score=0;this.hits=0;this.resolved=0;this.combo=0;this.bestCombo=0;this.pulse=0;this.message='';this.events=[];}
- start(){
+ constructor(levelId=0){this.levelId=getLevel(levelId).id;this.phase='ready';this.elapsed=0;this.ship={x:0,y:0};this.pose={yaw:0,pitch:0};this.gates=[];this.score=0;this.hits=0;this.resolved=0;this.combo=0;this.bestCombo=0;this.pulse=0;this.message='';this.events=[];}
+ start(levelId=this.levelId){
+  this.levelId=getLevel(levelId).id;
   Object.assign(this,{phase:'flying',elapsed:0,ship:{x:0,y:0},pose:{yaw:0,pitch:0},score:0,hits:0,resolved:0,combo:0,bestCombo:0,pulse:0,message:'看向光门 · 轻轻转头',events:[]});
-  this.gates=Array.from({length:12},(_,i)=>({id:i,at:6+i*3,x:i===0?0:Math.sin(i*.92)*2.3,y:i<2?0:Math.sin(i*.73)*1.2,radius:i<2?2.2:1.7,done:false,hit:false}));
+  this.gates=generateGates({level:this.levelId});
  }
  nextGate(){return this.gates.find(g=>!g.done)||null;}
  step(dt,input={},auto=false){

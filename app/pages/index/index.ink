@@ -1,5 +1,5 @@
 <script def>
-{"navigationBarTitleText":"星门穿梭","navigationStyle":"custom","description":"45秒头动透视穿门展示，提供原地校准、横排点头菜单、按键回退和自动演示。","schema":{"data":{"type":"object","properties":{}}}}
+{"navigationBarTitleText":"星门穿梭","navigationStyle":"custom","description":"体验关加20个逐步进阶关卡，每关45秒，自由选关、下一关、头动透视和按键回退。","schema":{"data":{"type":"object","properties":{}}}}
 </script>
 <script setup>
 import wx from 'wx';
@@ -8,15 +8,16 @@ import {Controller} from '../../lib/controller.js';
 import {drawScene} from '../../lib/renderer.js';
 import {MenuController} from '../../lib/menu-controller.js';
 import {MenuMotion} from '../../lib/menu-motion.js';
+import {LEVELS} from '../../lib/levels.js';
 
 export default {
- data:{phase:'ready',mode:'head',message:'小幅转头 · 穿越星门',seconds:45,score:0,hits:0,combo:0,bestCombo:0,title:'',countdown:2,feedback:'',sensor:'',menuButtons:[],buttonWidth:132,buttonRowWidth:416,menuScrollLeft:0,menuTrackLeft:0,menuHelp:'',soundLabel:'音效开',errorText:'',settings:false},
+ data:{levelId:0,levelLabel:'体验关',levelSummary:'原版体验路线 · 每关45秒',levelPreviewLabel:'体验关',levelPreviewSummary:'原版体验路线 · 每关45秒',phase:'ready',mode:'head',message:'小幅转头 · 穿越星门',seconds:45,score:0,hits:0,combo:0,bestCombo:0,title:'',countdown:2,feedback:'',sensor:'',menuButtons:[],buttonWidth:132,buttonRowWidth:416,menuScrollLeft:0,menuTrackLeft:0,menuHelp:'',soundLabel:'音效开',errorText:'',settings:false},
  onLoad(){
   this._visible=false;this._ready=false;this._generation=0;this._soundOn=true;this._settings=false;this._renderFailures=0;this._canvasAttempts=0;this._menuPhase='';this._sounds={};
   this.input=new PoseInput({Orientation:typeof AbsoluteOrientationSensor==='undefined'?null:AbsoluteOrientationSensor,Gyro:typeof Gyroscope==='undefined'?null:Gyroscope,report:message=>{if(this._visible)this.setData({errorText:message});}});
   this.game=new Controller({input:this.input,emit:patch=>{if(!this._visible)return;this.setData(patch);this.syncMenu(patch.phase);},sound:event=>this.playSound(event)});
   this.menuMotion=new MenuMotion({emit:patch=>{if(this._visible)this.setData(patch);}});
-  this.menu=new MenuController({Sensor:typeof Gyroscope==='undefined'?null:Gyroscope,emit:patch=>{if(this._visible){this.setData(patch);this.menuMotion.to(patch.menuScrollLeft);}},report:error=>this.setData({errorText:error.message||String(error)})});
+  this.menu=new MenuController({Sensor:typeof Gyroscope==='undefined'?null:Gyroscope,emit:patch=>{if(this._visible){this.setData(patch);this.menuMotion.to(patch.menuScrollLeft);if(this.game.phase==='levels'){const level=LEVELS[this.menu.focus];this.setData({levelPreviewLabel:level?level.label:'返回首页',levelPreviewSummary:level?level.summary:'保留当前关卡选择'});}}},report:error=>this.setData({errorText:error.message||String(error)})});
  },
  onShow(){this._visible=true;this._generation++;this._menuPhase='';this._settings=false;this.setData({settings:false,errorText:''});this.game.show();if(this._ready)this.beginRender();},
  onReady(){this._ready=true;if(this._visible)this.beginRender();},
@@ -27,19 +28,21 @@ export default {
   if(phase==='flying'||phase==='calibrating'){return;}
   let buttons;
   if(this._settings){buttons=[{id:'yaw',label:this.input.yawSign===1?'反转左右':'恢复左右',run:()=>this.flipAxis('yaw')},{id:'pitch',label:this.input.pitchSign===1?'反转上下':'恢复上下',run:()=>this.flipAxis('pitch')},{id:'sound',label:this._soundOn?'关闭音效':'开启音效',run:()=>this.toggleSound()},{id:'close',label:'返回',run:()=>this.closeSettings()}];}
-  else if(phase==='ready'){buttons=[{id:'start',label:'开始飞行',run:()=>this.start('head')},{id:'demo',label:'观赏演示',run:()=>this.start('demo')},{id:'settings',label:'设置',run:()=>this.openSettings()},{id:'keys',label:'按键模式',run:()=>this.start('keys')}];}
+  else if(phase==='levels'){buttons=LEVELS.map(level=>({id:'level-'+level.id,label:level.label,run:()=>this.game.selectLevel(level.id)})).concat([{id:'home',label:'返回首页',run:()=>this.game.home()}]);}
+  else if(phase==='ready'){buttons=[{id:'start',label:'开始飞行',run:()=>this.start('head')},{id:'demo',label:'观赏演示',run:()=>this.start('demo')},{id:'levels',label:'自由选关',run:()=>this.openLevels()},{id:'settings',label:'设置',run:()=>this.openSettings()},{id:'keys',label:'按键模式',run:()=>this.start('keys')}];}
   else if(phase==='paused'){buttons=[{id:'resume',label:'继续飞行',run:()=>this.resume()},{id:'keys',label:'改用按键',run:()=>this.game.useKeys()},{id:'home',label:'结束本局',run:()=>this.game.home()}];}
-  else if(phase==='result'){buttons=[{id:'again',label:this.game.mode==='demo'?'再看一次':'再来一次',run:()=>this.start(this.game.mode)},{id:'home',label:'回到首页',run:()=>this.game.home()}];}
+  else if(phase==='result'){buttons=(this.game.levelId<20?[{id:'next',label:this.game.mode==='demo'?'下一关演示':'下一关',run:()=>this.game.nextLevel()}]:[]).concat([{id:'again',label:this.game.mode==='demo'?'再看一次':'再来一次',run:()=>this.start(this.game.mode)},{id:'levels',label:'自由选关',run:()=>this.openLevels()},{id:'home',label:'回到首页',run:()=>this.game.home()}]);}
   else{buttons=[{id:'retry',label:'重试画布',run:()=>this.retryCanvas()},{id:'home',label:'回到首页',run:()=>{this.game.home();this.retryCanvas();}}];}
-  this.menu.configure({buttons});this.menu.show();
+  this.menu.configure({buttons});if(phase==='levels')this.menu.focus=this.game.levelId;this.menu.show();
  },
  start(mode){this._settings=false;this.setData({settings:false,errorText:''});this.menu.hide();this._menuPhase='';this.game.start(mode);},
  resume(){this.menu.hide();this._menuPhase='';this.game.resume();},
+ openLevels(){this._settings=false;this.setData({settings:false});this.game.openLevels();},
  openSettings(){this._settings=true;this.setData({settings:true});this.syncMenu(this.game.phase);},
  closeSettings(){this._settings=false;this.setData({settings:false});this.syncMenu(this.game.phase);},
  flipAxis(axis){if(axis==='yaw')this.input.yawSign*=-1;else this.input.pitchSign*=-1;this._menuPhase='';this.syncMenu(this.game.phase);},
  toggleSound(){this._soundOn=!this._soundOn;this.stopSounds();this.setData({soundLabel:this._soundOn?'音效开':'音效关'});this._menuPhase='';this.syncMenu(this.game.phase);},
- onAction(event){if(this._visible)this.menu.tap(event.currentTarget.dataset.id);},
+ onAction(event){if(!this._visible)return;const id=event?.currentTarget?.dataset?.id||event?.target?.dataset?.id;return id?this.menu.tap(id):this.menu.confirm();},
  onPause(){if(this.game.phase==='flying')this.game.pause();},
  onRecenter(){if(this.game.phase==='flying')this.game.recenter();},
  onKeyUp(event){
@@ -76,7 +79,7 @@ export default {
 <page>
  <view class="stage">
   <canvas id="flight" width="448" height="352" class="scene"></canvas>
-  <view class="topline"><text>STARGATE / 01</text><text>{{mode === 'demo' ? '自动演示' : '星门穿梭'}}</text></view>
+  <view class="topline"><text>STARGATE / {{levelLabel}}</text><text>{{mode === 'demo' ? '自动演示' : '星门穿梭'}}</text></view>
   <view class="hud" style="display: {{phase === 'flying' ? 'flex' : 'none'}}">
    <view class="stat"><text class="tiny">SCORE</text><text class="value">{{score}}</text></view>
    <view class="stat middle"><text class="tiny">TIME LEFT</text><text class="value">{{seconds}}s</text></view>
@@ -87,13 +90,14 @@ export default {
    <view class="mini-row"><card class="mini" bindtap="onRecenter"><text>重置朝向</text></card><card class="mini" bindtap="onPause"><text>暂停</text></card></view>
   </view>
   <view class="intro" style="display: {{phase === 'ready' && !settings ? 'flex' : 'none'}}">
-   <text class="eyebrow">SPATIAL JOY · FLIGHT EXPERIENCE</text><text class="hero">星门穿梭</text><text class="sub">看向光门，向星空出发。</text>
-   <view class="chips"><text>45 秒</text><text>12 道星门</text><text>轻轻转头</text></view>
+   <text class="eyebrow">SPATIAL JOY · FLIGHT EXPERIENCE</text><text class="hero">星门穿梭</text><text class="sub">{{levelLabel}} · 每关45秒</text>
+   <view class="chips"><text>{{levelSummary}}</text></view>
   </view>
+  <view class="intro" style="display: {{phase === 'levels' ? 'flex' : 'none'}}"><text class="eyebrow">自由选关 · 体验关 + 20关</text><text class="hero small">{{levelPreviewLabel}}</text><text class="sub">{{levelPreviewSummary}}</text><text class="tiny">左右选择 · 点头确认 · 无需解锁</text></view>
   <view class="intro" style="display: {{settings ? 'flex' : 'none'}}"><text class="eyebrow">FLIGHT CONTROLS</text><text class="hero small">飞行设置</text><text class="sub">两轴可反转 · {{soundLabel}}</text><text class="tiny">小幅转头即可，原地体验；按键也能玩。</text></view>
-  <view class="intro" style="display: {{phase === 'calibrating' ? 'flex' : 'none'}}"><text class="eyebrow">{{mode === 'demo' ? '观赏模式 · 不计真实成绩' : '准备启航'}}</text><text class="hero">{{countdown}}</text><text class="sub">保持正视前方</text><text class="tiny">{{mode === 'keys' ? '方向键转向 · 空格回正 · 确认键暂停' : '马上出发 · 原地轻轻转头即可'}}</text></view>
+  <view class="intro" style="display: {{phase === 'calibrating' ? 'flex' : 'none'}}"><text class="eyebrow">{{levelLabel}} · {{mode === 'demo' ? '演示不计成绩' : '准备启航'}}</text><text class="hero">{{countdown}}</text><text class="sub">保持正视前方</text><text class="tiny">{{mode === 'keys' ? '方向键转向 · 空格回正 · 确认键暂停' : '马上出发 · 原地轻轻转头即可'}}</text></view>
   <view class="intro" style="display: {{phase === 'paused' ? 'flex' : 'none'}}"><text class="eyebrow">FLIGHT PAUSED</text><text class="hero small">暂停航行</text><text class="sub">{{message}}</text><text class="tiny">继续时正视前方，重新校准朝向</text></view>
-  <view class="intro result" style="display: {{phase === 'result' ? 'flex' : 'none'}}"><text class="eyebrow">{{mode === 'demo' ? '自动演示完成 · 不计成绩' : 'MISSION COMPLETE'}}</text><text class="hero small">{{mode === 'demo' ? '星空等你来' : title}}</text><text class="result-score">{{mode === 'demo' ? '45 秒星际之旅' : score + ' PTS'}}</text><text class="sub">穿越 {{hits}} / 12 · 最佳连击 {{bestCombo}}</text></view>
+  <view class="intro result" style="display: {{phase === 'result' ? 'flex' : 'none'}}"><text class="eyebrow">{{levelLabel}} · {{mode === 'demo' ? '演示不计成绩' : '航行完成'}}</text><text class="hero small">{{mode === 'demo' ? '星空等你来' : title}}</text><text class="result-score">{{mode === 'demo' ? '45 秒星际之旅' : score + ' PTS'}}</text><text class="sub">穿越 {{hits}} / 12 · 最佳连击 {{bestCombo}}</text></view>
   <view class="intro" style="display: {{phase === 'error' ? 'flex' : 'none'}}"><text class="hero small">画布暂不可用</text><text class="sub">{{message}}</text></view>
   <view class="menu" style="display: {{phase !== 'flying' && phase !== 'calibrating' ? 'flex' : 'none'}}">
    <view class="menu-rail"><view class="menu-row" style="width: {{buttonRowWidth}}px; left: {{menuTrackLeft}}px"><card ink:for="{{menuButtons}}" ink:key="id" class="menu-card" style="width: {{buttonWidth}}px" data-id="{{item.id}}" bindtap="onAction"><view class="{{item.className}}"><text>{{item.label}}</text></view></card></view></view>

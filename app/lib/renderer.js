@@ -64,7 +64,7 @@ export function drawScene(ctx,flight,pose={},time=0,{phase=flight.phase,menu=fal
  if(active){
   line2(76,HEIGHT-14,372,HEIGHT-14,.2,2);line2(76,HEIGHT-14,76+296*flight.elapsed/45,HEIGHT-14,.9,2);
   ctx.font='9px monospace';ctx.textAlign='left';ctx.fillStyle='rgba(64,255,94,0.6)';ctx.fillText(flight.elapsed>39?'HYPERDRIVE':'VECTOR / '+(pose.yaw*180/Math.PI||0).toFixed(0)+'°',20,HEIGHT-28);
-  ctx.textAlign='right';ctx.fillText('SECTOR 01',428,HEIGHT-28);
+  ctx.textAlign='right';ctx.fillText(flight.levelId?'LEVEL '+String(flight.levelId).padStart(2,'0'):'TRIAL',428,HEIGHT-28);
  }
  if(menu){ctx.fillStyle='rgba(0,0,0,0.72)';ctx.fillRect(24,54,400,270);}
  ctx.restore();if(typeof ctx.flush==='function')ctx.flush();

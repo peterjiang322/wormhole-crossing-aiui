@@ -49,5 +49,24 @@
     "readerObserved": true,
     "physicalRokidTested": false,
     "rapidReverseAndHide": "23 local tests pass"
+  },
+  "levelsVersion": {
+    "version": "1.1.0",
+    "date": "2026-10-29",
+    "experiencePlus20": true,
+    "durationEach": 45,
+    "freeSelection": true,
+    "level20MenuOffset": 2556,
+    "level20Result": {
+      "duration": 45,
+      "hits": 12,
+      "score": 2700,
+      "nextButton": false
+    },
+    "level19To20": "explicit next observed; recalibration observed",
+    "reader": "Ink 0.19.1 selection and level20 preview observed with foreground tab",
+    "seededGenerator": "420 seeds geometry and actual flight engine verified",
+    "tests": 35,
+    "deviceTested": false
   }
 }
