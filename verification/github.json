@@ -3,8 +3,9 @@
   "url": "https://github.com/peterjiang322/stargate-flight-aiui",
   "private": true,
   "branch": "main",
-  "releaseCommit": "a73fa6f9b1adfe5641df32beefc84299e6ab4406",
+  "releaseCommit": "d365cef9a67f8e68f73bb6c38e82f527cc991f48",
   "sourceBranch": "codex/initial-release",
-  "verification": "GitHub REST repository private=true; git push HEAD:main succeeded; remote main SHA checked separately after delivery-record commit",
-  "artifactSha256": "26741639a85a25fce2aab30a7cd53b1f7822a21b9b1933fd49a885ee363a0b9c"
+  "verification": "Menu fix release commit and AIX hash recorded; final remote main HEAD compared after push",
+  "artifactSha256": "1e6496ac85dd237df14248e8b141bcdccfd8ebf068b7433791e04b04201ab3d9",
+  "version": "1.0.1"
 }
