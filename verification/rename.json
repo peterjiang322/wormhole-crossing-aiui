@@ -1,0 +1,14 @@
+{
+  "version": "1.2.1",
+  "name": "虫洞漫游",
+  "englishName": "Wormhole Roam",
+  "scope": "branding only; gameplay, levels and menu interactions unchanged",
+  "automatedTests": 39,
+  "staticChecks": 55,
+  "companion": "new title, homepage and live demo observed; rename-preview-*.png",
+  "officialReader": "new AIX name and new page title, level20 observed; rename-reader-level20.png",
+  "poster": "built-in imagegen edit; name and English inspected",
+  "pdf": "9 pages, actual renamed screenshots, embedded Chinese fonts",
+  "historicalEvidence": "Old version logs and images retained as contemporaneous evidence.",
+  "physicalDeviceTestedByAgent": false
+}

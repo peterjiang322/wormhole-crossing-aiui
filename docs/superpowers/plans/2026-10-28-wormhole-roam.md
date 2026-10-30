@@ -1,4 +1,4 @@
-# 星门穿梭 Implementation Plan
+# 虫洞漫游 Implementation Plan
 
 **Goal:** 构建单关45秒、头动透视的Rokid AIUI线下展示，并交付私有仓库。
 **Architecture:** 纯数学引擎与Canvas渲染共用于AIUI和浏览器；页面控制器管理权威状态，设备适配隔离传感器生命周期，公共菜单互斥。
@@ -15,7 +15,7 @@
 - [x] 实现drawScene(ctx,flight,pose,time)及Ink页面：星点/线框隧道/光门/粒子/HUD、起始/暂停/结果横排菜单、两轴反转和本地音效。
 - [x] 构建共享引擎的浏览器预览，使用鼠标模拟头部/键盘/真实规则模式与独立自动演示；浏览器截图、运行45秒、重玩/暂停与控制边界验收。
 - [x] 生成本地宣传资产与说明，检查文案/PNG/路由一致性；静态检查、测试、真实AIX打包和源码ZIP；报告证据边界。
-- [x] 独立git初始化，代码review修复后提交，创建peterjiang322/stargate-flight-aiui私有仓库并正常推送，核验远端可见性和提交SHA。
+- [x] 独立git初始化，代码review修复后提交，创建peterjiang322/wormhole-roam-aiui（现名）私有仓库并正常推送，核验远端可见性和提交SHA。
 
 ## 设备联调
 指定Rokid型号/固件的Canvas、轴向、传感器频率、菜单完整点头、音效路径、前后台清理、明亮商场可读性均需真实设备验收。无设备时交付操作清单并标注待验收，不把网页模拟当真机。

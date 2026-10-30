@@ -1,11 +1,11 @@
 {
-  "repository": "peterjiang322/stargate-flight-aiui",
-  "url": "https://github.com/peterjiang322/stargate-flight-aiui",
+  "repository": "peterjiang322/wormhole-roam-aiui",
+  "url": "https://github.com/peterjiang322/wormhole-roam-aiui",
   "private": true,
   "branch": "main",
-  "releaseCommit": "d9d7a005b0dc9dc379ede120f9e9547e16320b51",
   "sourceBranch": "codex/initial-release",
-  "verification": "1.2.0 difficulty and yaw release recorded; final remote main HEAD compared after push",
-  "artifactSha256": "01acb3785ca4fea6a71ff05e38b6900c81602cc8846f3b1996ad60103abaf712",
-  "version": "1.2.0"
+  "verification": "Repository renamed in-place; private visibility retained. Final remote main SHA compared after release push.",
+  "artifactSha256": "3198b4a743ba7678d8f6615072cc6179662c41be3c91cb01c31f467c805cf9e4",
+  "version": "1.2.1",
+  "previousReleaseCommit": "d9d7a005b0dc9dc379ede120f9e9547e16320b51"
 }

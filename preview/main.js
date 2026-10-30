@@ -33,11 +33,11 @@ function renderUI(){
  $('hud').hidden=!active;$('flight-footer').hidden=!active;$('intro').hidden=active;$('menu').hidden=active||phase==='calibrating';
  $('score').textContent=f.score;$('time').textContent=Math.ceil(45-f.elapsed)+'s';$('gates').textContent=f.hits+' / '+getLevel(game.levelId).gateCount;$('feedback').textContent=f.message;
  $('sensor').textContent=game.mode==='demo'?'自动演示 · 不计成绩':game.mode==='keys'?'方向键转向 · 空格回正':'鼠标模拟头动 · 空格回正';
- $('level-label').textContent='STARGATE / '+getLevel(game.levelId).label;$('mode-label').textContent=game.mode==='demo'?'自动演示':'星门穿梭';$('status').textContent=active?'FLIGHT IN PROGRESS':phase==='result'?'MISSION COMPLETE':'READY TO EXPLORE';
+ $('level-label').textContent='WORMHOLE / '+getLevel(game.levelId).label;$('mode-label').textContent=game.mode==='demo'?'自动演示':'虫洞漫游';$('status').textContent=active?'FLIGHT IN PROGRESS':phase==='result'?'MISSION COMPLETE':'READY TO EXPLORE';
  $('help').textContent='左右方向键选择 · 点击 / Enter 确认';$('input-label').textContent=game.mode==='demo'?'INPUT / AUTOPILOT DEMO':game.mode==='keys'?'INPUT / KEYBOARD':'INPUT / POINTER → HEAD POSE';
  const title=$('title'),subtitle=$('subtitle'),chips=$('chips'),eyebrow=$('eyebrow');title.className='';chips.className='';
  if(settings){eyebrow.textContent='FLIGHT CONTROLS';title.textContent='飞行设置';title.className='small';subtitle.textContent='两轴可反转 · 音效'+(soundOn?'开':'关');chips.textContent='小幅转头即可，原地体验；按键也能玩。';}
- else if(phase==='ready'){eyebrow.textContent='SPATIAL JOY · FLIGHT EXPERIENCE';title.textContent='星门穿梭';subtitle.textContent=getLevel(game.levelId).label+' · 每关45秒';chips.textContent=getLevel(game.levelId).summary;}
+ else if(phase==='ready'){eyebrow.textContent='SPATIAL JOY · FLIGHT EXPERIENCE';title.textContent='虫洞漫游';subtitle.textContent=getLevel(game.levelId).label+' · 每关45秒';chips.textContent=getLevel(game.levelId).summary;}
  else if(phase==='levels'){renderLevelPreview();}
  else if(phase==='calibrating'){eyebrow.textContent=getLevel(game.levelId).label+' · '+(game.mode==='demo'?'演示不计成绩':'准备启航');title.textContent=Math.max(1,Math.ceil((2000-(performance.now()-game.began))/1000));subtitle.textContent='保持正视前方';chips.textContent=game.mode==='keys'?'方向键转向 · 空格回正 · Enter 暂停':'马上出发 · 移动鼠标模拟轻轻转头';}
  else if(phase==='paused'){eyebrow.textContent='FLIGHT PAUSED';title.className='small';title.textContent='暂停航行';subtitle.textContent=game.message;chips.textContent='继续时正视前方，重新校准朝向';}
@@ -51,5 +51,5 @@ function resize(){const shell=document.querySelector('.display-shell'),width=she
 function frame(time){game.tick();const active=['flying','paused','result'].includes(game.phase);drawScene(ctx,game.flight,active?game.flight.pose:{yaw:Math.sin(time/5000)*.035,pitch:0},time/1000,{phase:game.phase,menu:!['flying','paused'].includes(game.phase)});frames++;if(time-fpsAt>1000){$('fps').textContent=Math.round(frames*1000/(time-fpsAt))+' FPS';fpsAt=time;frames=0;}raf=requestAnimationFrame(frame);}
 function show(){lastMenu='';game.show();raf=requestAnimationFrame(frame);}document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(raf);game.hide();menu.hide();motion.stop();audio?.suspend();}else{audio?.resume();show();}});window.addEventListener('pagehide',()=>{cancelAnimationFrame(raf);game.hide();menu.hide();motion.stop();audio?.close();});
 // Read-only diagnostics for local acceptance; no simulated results or time acceleration.
-window.stargate={get state(){return {levelId:game.levelId,levelLabel:getLevel(game.levelId).label,phase:game.phase,mode:game.mode,elapsed:game.flight.elapsed,hits:game.flight.hits,score:game.flight.score,menuScroll:Math.round(motion.position),focus:menu.focus};}};
+window.wormhole={get state(){return {levelId:game.levelId,levelLabel:getLevel(game.levelId).label,phase:game.phase,mode:game.mode,elapsed:game.flight.elapsed,hits:game.flight.hits,score:game.flight.score,menuScroll:Math.round(motion.position),focus:menu.focus};}};
 show();

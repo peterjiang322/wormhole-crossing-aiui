@@ -1,8 +1,8 @@
 {
   "tool": "@yodaos-pkg/aix-cli 0.10.1",
   "engine": "^0.19.1",
-  "file": "dist/stargate-flight.aix",
-  "bytes": 895418,
-  "sha256": "01acb3785ca4fea6a71ff05e38b6900c81602cc8846f3b1996ad60103abaf712",
+  "file": "dist/wormhole-roam.aix",
+  "bytes": 895426,
+  "sha256": "3198b4a743ba7678d8f6615072cc6179662c41be3c91cb01c31f467c805cf9e4",
   "deviceTested": false
 }
