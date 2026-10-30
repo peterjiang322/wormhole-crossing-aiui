@@ -12,9 +12,9 @@ export function project(point, camera={}) {
  return {x:WIDTH/2+260*rx/depth,y:HEIGHT/2-260*ry/depth,scale:260/depth,z:depth};
 }
 export class Flight {
- constructor(levelId=0){this.levelId=getLevel(levelId).id;this.phase='ready';this.elapsed=0;this.ship={x:0,y:0};this.pose={yaw:0,pitch:0};this.gates=[];this.score=0;this.hits=0;this.resolved=0;this.combo=0;this.bestCombo=0;this.pulse=0;this.message='';this.events=[];}
+ constructor(levelId=0){this.levelId=getLevel(levelId).id;this.speed=getLevel(levelId).speed;this.phase='ready';this.elapsed=0;this.ship={x:0,y:0};this.pose={yaw:0,pitch:0};this.gates=[];this.score=0;this.hits=0;this.resolved=0;this.combo=0;this.bestCombo=0;this.pulse=0;this.message='';this.events=[];}
  start(levelId=this.levelId){
-  this.levelId=getLevel(levelId).id;
+  this.levelId=getLevel(levelId).id;this.speed=getLevel(levelId).speed;
   Object.assign(this,{phase:'flying',elapsed:0,ship:{x:0,y:0},pose:{yaw:0,pitch:0},score:0,hits:0,resolved:0,combo:0,bestCombo:0,pulse:0,message:'看向光门 · 轻轻转头',events:[]});
   this.gates=generateGates({level:this.levelId});
  }
@@ -27,7 +27,7 @@ export class Flight {
   const yaw=auto&&next?clamp((next.x-this.ship.x)*.5,-.22,.22):clamp(Number.isFinite(input.yaw)?input.yaw:0,-.38,.38);
   const pitch=auto&&next?clamp((next.y-this.ship.y)*.5,-.18,.18):clamp(Number.isFinite(input.pitch)?input.pitch:0,-.25,.25);
   this.pose={yaw,pitch};
-  const old={...this.ship};this.ship.x=clamp(this.ship.x+Math.tan(yaw)*SPEED*dt,-4.3,4.3);this.ship.y=clamp(this.ship.y+Math.tan(pitch)*SPEED*dt,-2.6,2.6);
+  const old={...this.ship};this.ship.x=clamp(this.ship.x+Math.tan(yaw)*this.speed*dt,-4.3,4.3);this.ship.y=clamp(this.ship.y+Math.tan(pitch)*this.speed*dt,-2.6,2.6);
   this.pulse=Math.max(0,this.pulse-dt*1.8);
   for(const g of this.gates){
    if(g.done||g.at>this.elapsed)continue;
@@ -40,5 +40,5 @@ export class Flight {
  }
  pause(){if(this.phase==='flying')this.phase='paused';}
  resume(){if(this.phase==='paused')this.phase='flying';}
- get title(){return this.hits>=10?'王牌领航员':this.hits>=6?'星际探索者':'初航完成';}
+ get title(){return this.hits/this.gates.length>=10/12?'王牌领航员':this.hits/this.gates.length>=.5?'星际探索者':'初航完成';}
 }

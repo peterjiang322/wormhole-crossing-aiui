@@ -3,7 +3,7 @@
 </script>
 <script setup>
 import wx from 'wx';
-import {PoseInput} from '../../lib/pose.js';
+import {PoseInput,yawActionLabel} from '../../lib/pose.js';
 import {Controller} from '../../lib/controller.js';
 import {drawScene} from '../../lib/renderer.js';
 import {MenuController} from '../../lib/menu-controller.js';
@@ -11,7 +11,7 @@ import {MenuMotion} from '../../lib/menu-motion.js';
 import {LEVELS} from '../../lib/levels.js';
 
 export default {
- data:{levelId:0,levelLabel:'体验关',levelSummary:'原版体验路线 · 每关45秒',levelPreviewLabel:'体验关',levelPreviewSummary:'原版体验路线 · 每关45秒',phase:'ready',mode:'head',message:'小幅转头 · 穿越星门',seconds:45,score:0,hits:0,combo:0,bestCombo:0,title:'',countdown:2,feedback:'',sensor:'',menuButtons:[],buttonWidth:132,buttonRowWidth:416,menuScrollLeft:0,menuTrackLeft:0,menuHelp:'',soundLabel:'音效开',errorText:'',settings:false},
+ data:{totalGates:12,levelId:0,levelLabel:'体验关',levelSummary:'原版体验路线 · 每关45秒',levelPreviewLabel:'体验关',levelPreviewSummary:'原版体验路线 · 每关45秒',phase:'ready',mode:'head',message:'小幅转头 · 穿越星门',seconds:45,score:0,hits:0,combo:0,bestCombo:0,title:'',countdown:2,feedback:'',sensor:'',menuButtons:[],buttonWidth:132,buttonRowWidth:416,menuScrollLeft:0,menuTrackLeft:0,menuHelp:'',soundLabel:'音效开',errorText:'',settings:false},
  onLoad(){
   this._visible=false;this._ready=false;this._generation=0;this._soundOn=true;this._settings=false;this._renderFailures=0;this._canvasAttempts=0;this._menuPhase='';this._sounds={};
   this.input=new PoseInput({Orientation:typeof AbsoluteOrientationSensor==='undefined'?null:AbsoluteOrientationSensor,Gyro:typeof Gyroscope==='undefined'?null:Gyroscope,report:message=>{if(this._visible)this.setData({errorText:message});}});
@@ -27,7 +27,7 @@ export default {
   this.menu.hide();this.menuMotion.reset();
   if(phase==='flying'||phase==='calibrating'){return;}
   let buttons;
-  if(this._settings){buttons=[{id:'yaw',label:this.input.yawSign===1?'反转左右':'恢复左右',run:()=>this.flipAxis('yaw')},{id:'pitch',label:this.input.pitchSign===1?'反转上下':'恢复上下',run:()=>this.flipAxis('pitch')},{id:'sound',label:this._soundOn?'关闭音效':'开启音效',run:()=>this.toggleSound()},{id:'close',label:'返回',run:()=>this.closeSettings()}];}
+  if(this._settings){buttons=[{id:'yaw',label:yawActionLabel(this.input.yawSign),run:()=>this.flipAxis('yaw')},{id:'pitch',label:this.input.pitchSign===1?'反转上下':'恢复上下',run:()=>this.flipAxis('pitch')},{id:'sound',label:this._soundOn?'关闭音效':'开启音效',run:()=>this.toggleSound()},{id:'close',label:'返回',run:()=>this.closeSettings()}];}
   else if(phase==='levels'){buttons=LEVELS.map(level=>({id:'level-'+level.id,label:level.label,run:()=>this.game.selectLevel(level.id)})).concat([{id:'home',label:'返回首页',run:()=>this.game.home()}]);}
   else if(phase==='ready'){buttons=[{id:'start',label:'开始飞行',run:()=>this.start('head')},{id:'demo',label:'观赏演示',run:()=>this.start('demo')},{id:'levels',label:'自由选关',run:()=>this.openLevels()},{id:'settings',label:'设置',run:()=>this.openSettings()},{id:'keys',label:'按键模式',run:()=>this.start('keys')}];}
   else if(phase==='paused'){buttons=[{id:'resume',label:'继续飞行',run:()=>this.resume()},{id:'keys',label:'改用按键',run:()=>this.game.useKeys()},{id:'home',label:'结束本局',run:()=>this.game.home()}];}
@@ -83,7 +83,7 @@ export default {
   <view class="hud" style="display: {{phase === 'flying' ? 'flex' : 'none'}}">
    <view class="stat"><text class="tiny">SCORE</text><text class="value">{{score}}</text></view>
    <view class="stat middle"><text class="tiny">TIME LEFT</text><text class="value">{{seconds}}s</text></view>
-   <view class="stat right"><text class="tiny">GATES</text><text class="value">{{hits}} / 12</text></view>
+   <view class="stat right"><text class="tiny">GATES</text><text class="value">{{hits}} / {{totalGates}}</text></view>
   </view>
   <view class="flight-footer" style="display: {{phase === 'flying' ? 'flex' : 'none'}}">
    <text class="feedback">{{feedback}}</text><text class="tiny">{{sensor}}</text>
@@ -97,7 +97,7 @@ export default {
   <view class="intro" style="display: {{settings ? 'flex' : 'none'}}"><text class="eyebrow">FLIGHT CONTROLS</text><text class="hero small">飞行设置</text><text class="sub">两轴可反转 · {{soundLabel}}</text><text class="tiny">小幅转头即可，原地体验；按键也能玩。</text></view>
   <view class="intro" style="display: {{phase === 'calibrating' ? 'flex' : 'none'}}"><text class="eyebrow">{{levelLabel}} · {{mode === 'demo' ? '演示不计成绩' : '准备启航'}}</text><text class="hero">{{countdown}}</text><text class="sub">保持正视前方</text><text class="tiny">{{mode === 'keys' ? '方向键转向 · 空格回正 · 确认键暂停' : '马上出发 · 原地轻轻转头即可'}}</text></view>
   <view class="intro" style="display: {{phase === 'paused' ? 'flex' : 'none'}}"><text class="eyebrow">FLIGHT PAUSED</text><text class="hero small">暂停航行</text><text class="sub">{{message}}</text><text class="tiny">继续时正视前方，重新校准朝向</text></view>
-  <view class="intro result" style="display: {{phase === 'result' ? 'flex' : 'none'}}"><text class="eyebrow">{{levelLabel}} · {{mode === 'demo' ? '演示不计成绩' : '航行完成'}}</text><text class="hero small">{{mode === 'demo' ? '星空等你来' : title}}</text><text class="result-score">{{mode === 'demo' ? '45 秒星际之旅' : score + ' PTS'}}</text><text class="sub">穿越 {{hits}} / 12 · 最佳连击 {{bestCombo}}</text></view>
+  <view class="intro result" style="display: {{phase === 'result' ? 'flex' : 'none'}}"><text class="eyebrow">{{levelLabel}} · {{mode === 'demo' ? '演示不计成绩' : '航行完成'}}</text><text class="hero small">{{mode === 'demo' ? '星空等你来' : title}}</text><text class="result-score">{{mode === 'demo' ? '45 秒星际之旅' : score + ' PTS'}}</text><text class="sub">穿越 {{hits}} / {{totalGates}} · 最佳连击 {{bestCombo}}</text></view>
   <view class="intro" style="display: {{phase === 'error' ? 'flex' : 'none'}}"><text class="hero small">画布暂不可用</text><text class="sub">{{message}}</text></view>
   <view class="menu" style="display: {{phase !== 'flying' && phase !== 'calibrating' ? 'flex' : 'none'}}">
    <view class="menu-rail"><view class="menu-row" style="width: {{buttonRowWidth}}px; left: {{menuTrackLeft}}px"><card ink:for="{{menuButtons}}" ink:key="id" class="menu-card" style="width: {{buttonWidth}}px" data-id="{{item.id}}" bindtap="onAction"><view class="{{item.className}}"><text>{{item.label}}</text></view></card></view></view>

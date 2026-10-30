@@ -6,6 +6,7 @@ export function drawScene(ctx,flight,pose={},time=0,{phase=flight.phase,menu=fal
  const playing=phase==='flying'||phase==='paused'||phase==='result';
  const elapsed=playing?flight.elapsed:time*.45;
  const active=phase==='flying';
+ const speed=playing?flight.speed:SPEED;
  const cam={yaw:pose.yaw||0,pitch:pose.pitch||0,x:playing?flight.ship.x:0,y:playing?flight.ship.y:0};
  ctx.clearRect(0,0,WIDTH,HEIGHT);ctx.fillStyle='#000000';ctx.fillRect(0,0,WIDTH,HEIGHT);
  ctx.save();ctx.beginPath();ctx.rect(0,0,WIDTH,HEIGHT);ctx.clip();
@@ -15,14 +16,14 @@ export function drawScene(ctx,flight,pose={},time=0,{phase=flight.phase,menu=fal
   if(close&&points.every(p=>project(p,cam)))ctx.closePath();ctx.stroke();
  }
  function line2(x,y,x2,y2,alpha=.6,width=1){ctx.strokeStyle='rgba(64,255,94,'+alpha+')';ctx.lineWidth=width;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x2,y2);ctx.stroke();}
- for(const s of stars){const z=((s.z-elapsed*SPEED*.45)%160+160)%160+2;
+ for(const s of stars){const z=((s.z-elapsed*speed*.45)%160+160)%160+2;
   const p=project({x:s.x,y:s.y,z},cam);if(!p||p.x<0||p.x>WIDTH||p.y<0||p.y>HEIGHT)continue;
   ctx.fillStyle='rgba(64,255,94,'+(.18+.55*(1-z/162))+')';ctx.fillRect(p.x,p.y,s.size,s.size);
   if(active&&flight.elapsed>39){const far=project({x:s.x,y:s.y,z:z+6},cam);if(far)line2(p.x,p.y,far.x,far.y,.38);}
  }
  // Fixed world ribs and approaching cross-sections produce perspective and parallax.
  const rings=[];for(let i=0;i<13;i++){
-  const z=2+((i*10-elapsed*SPEED)%130+130)%130;
+  const z=2+((i*10-elapsed*speed)%130+130)%130;
   rings.push({z,points:octagon(0,0,z,7.7,.68)});
  }rings.sort((a,b)=>b.z-a.z);
  for(const ring of rings)path(ring.points,.09+.22*(1-ring.z/132),1,true);
@@ -32,7 +33,7 @@ export function drawScene(ctx,flight,pose={},time=0,{phase=flight.phase,menu=fal
  }
  if(playing){
   for(const g of flight.gates.filter(g=>!g.done&&g.at-flight.elapsed<15).reverse()){
-   const z=(g.at-flight.elapsed)*SPEED;
+   const z=(g.at-flight.elapsed)*speed;
    if(z<.65)continue;
    const alpha=clamp(1-z/180,.15,1),isNext=g===flight.nextGate();
    const pts=octagon(g.x,g.y,z,g.radius);

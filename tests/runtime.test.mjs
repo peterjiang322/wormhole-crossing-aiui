@@ -10,7 +10,7 @@ test('sensor rejects invalid quaternion and detects absence and stream loss',()=
  s.read([0,0,0,0]);assert.equal(p.healthy(),false);now=2100;assert.equal(p.timedOut(),true);s.read([0,0,0,1]);assert.equal(p.healthy(),true);now+=1100;assert.equal(p.timedOut(),true);
 });
 test('gyro fallback integrates finite short samples without integrating gaps',()=>{
- let now=0;const p=new PoseInput({Gyro:Sensor,now:()=>now});p.start();const s=p.sensor;s.x=0;s.y=1;p.sample(s);now=100;p.sample(s);assert.equal(p.get().yaw,-.1);now=2000;p.sample(s);assert.equal(p.get().yaw,-.1);p.recenter();assert.equal(p.get().yaw,0);
+ let now=0;const p=new PoseInput({Gyro:Sensor,now:()=>now});p.start();const s=p.sensor;s.x=0;s.y=1;p.sample(s);now=100;p.sample(s);assert.equal(p.get().yaw,.1);now=2000;p.sample(s);assert.equal(p.get().yaw,.1);p.recenter();assert.equal(p.get().yaw,0);
 });
 test('controller calibrates, pauses on input loss and hides all resources',()=>{
  assert.equal(typeof module.Controller,'function','controller is not implemented');

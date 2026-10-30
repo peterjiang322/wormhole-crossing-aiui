@@ -1,10 +1,11 @@
+import {DEFAULT_YAW_SIGN,yawActionLabel} from '../app/lib/pose.js';
 import {Controller} from '../app/lib/controller.js';
 import {drawScene} from '../app/lib/renderer.js';
 import {MenuController} from '../app/lib/menu-controller.js';
 import {MenuMotion} from '../app/lib/menu-motion.js';
 import {LEVELS,getLevel} from '../app/lib/levels.js';
 const $=id=>document.getElementById(id),stage=$('stage'),ctx=$('scene').getContext('2d');
-let mouse={yaw:0,pitch:0},center={yaw:0,pitch:0},settings=false,soundOn=true,yawSign=1,pitchSign=1,lastMenu='',previousPhase='',frames=0,fpsAt=performance.now(),raf=null,audio;
+let mouse={yaw:0,pitch:0},center={yaw:0,pitch:0},settings=false,soundOn=true,yawSign=DEFAULT_YAW_SIGN,pitchSign=1,lastMenu='',previousPhase='',frames=0,fpsAt=performance.now(),raf=null,audio;
 const pointer={mode:'orientation',start(){center={...mouse};},stop(){},healthy:()=>true,timedOut:()=>false,recenter(){center={...mouse};},get:()=>({yaw:(mouse.yaw-center.yaw)*yawSign,pitch:(mouse.pitch-center.pitch)*pitchSign})};
 function sound(event){if(!soundOn||event==='miss')return;try{audio=audio||new AudioContext();const o=audio.createOscillator(),g=audio.createGain();o.type='sine';o.frequency.setValueAtTime(event==='hit'?660:880,audio.currentTime);o.frequency.exponentialRampToValueAtTime(event==='hit'?990:1320,audio.currentTime+.13);g.gain.setValueAtTime(.04,audio.currentTime);g.gain.exponentialRampToValueAtTime(.001,audio.currentTime+.2);o.connect(g).connect(audio.destination);o.start();o.stop(audio.currentTime+.21);}catch(_){}}
 const motion=new MenuMotion({emit:patch=>{$('buttons').style.left=patch.menuTrackLeft+'px';}});
@@ -19,7 +20,7 @@ function syncMenu(){
  const key=settings?'settings':game.phase;if(lastMenu===key)return;lastMenu=key;menu.hide();motion.reset();
  if(['flying','calibrating'].includes(game.phase))return;
  let buttons;
- if(settings)buttons=[{id:'yaw',label:yawSign===1?'反转左右':'恢复左右',run(){yawSign*=-1;lastMenu='';syncMenu();}},{id:'pitch',label:pitchSign===1?'反转上下':'恢复上下',run(){pitchSign*=-1;lastMenu='';syncMenu();}},{id:'sound',label:soundOn?'关闭音效':'开启音效',run(){soundOn=!soundOn;lastMenu='';syncMenu();}},{id:'close',label:'返回',run(){settings=false;lastMenu='';renderUI();}}];
+ if(settings)buttons=[{id:'yaw',label:yawActionLabel(yawSign),run(){yawSign*=-1;lastMenu='';syncMenu();}},{id:'pitch',label:pitchSign===1?'反转上下':'恢复上下',run(){pitchSign*=-1;lastMenu='';syncMenu();}},{id:'sound',label:soundOn?'关闭音效':'开启音效',run(){soundOn=!soundOn;lastMenu='';syncMenu();}},{id:'close',label:'返回',run(){settings=false;lastMenu='';renderUI();}}];
  else if(game.phase==='levels')buttons=LEVELS.map(level=>({id:'level-'+level.id,label:level.label,run:()=>game.selectLevel(level.id)})).concat([{id:'home',label:'返回首页',run:()=>game.home()}]);
  else if(game.phase==='ready')buttons=[{id:'start',label:'开始飞行',run:()=>begin('head')},{id:'demo',label:'观赏演示',run:()=>begin('demo')},{id:'levels',label:'自由选关',run:()=>game.openLevels()},{id:'settings',label:'设置',run(){settings=true;renderUI();}},{id:'keys',label:'按键模式',run:()=>begin('keys')}];
  else if(game.phase==='paused')buttons=[{id:'resume',label:'继续飞行',run:()=>game.resume()},{id:'keys',label:'改用按键',run:()=>game.useKeys()},{id:'home',label:'结束本局',run:()=>game.home()}];
@@ -30,7 +31,7 @@ function renderLevelPreview(){const p=LEVELS[menu.focus];$('eyebrow').textConten
 function renderUI(){
  if(!game)return;syncMenu();const f=game.flight,phase=game.phase,active=phase==='flying';
  $('hud').hidden=!active;$('flight-footer').hidden=!active;$('intro').hidden=active;$('menu').hidden=active||phase==='calibrating';
- $('score').textContent=f.score;$('time').textContent=Math.ceil(45-f.elapsed)+'s';$('gates').textContent=f.hits+' / 12';$('feedback').textContent=f.message;
+ $('score').textContent=f.score;$('time').textContent=Math.ceil(45-f.elapsed)+'s';$('gates').textContent=f.hits+' / '+getLevel(game.levelId).gateCount;$('feedback').textContent=f.message;
  $('sensor').textContent=game.mode==='demo'?'自动演示 · 不计成绩':game.mode==='keys'?'方向键转向 · 空格回正':'鼠标模拟头动 · 空格回正';
  $('level-label').textContent='STARGATE / '+getLevel(game.levelId).label;$('mode-label').textContent=game.mode==='demo'?'自动演示':'星门穿梭';$('status').textContent=active?'FLIGHT IN PROGRESS':phase==='result'?'MISSION COMPLETE':'READY TO EXPLORE';
  $('help').textContent='左右方向键选择 · 点击 / Enter 确认';$('input-label').textContent=game.mode==='demo'?'INPUT / AUTOPILOT DEMO':game.mode==='keys'?'INPUT / KEYBOARD':'INPUT / POINTER → HEAD POSE';
@@ -40,7 +41,7 @@ function renderUI(){
  else if(phase==='levels'){renderLevelPreview();}
  else if(phase==='calibrating'){eyebrow.textContent=getLevel(game.levelId).label+' · '+(game.mode==='demo'?'演示不计成绩':'准备启航');title.textContent=Math.max(1,Math.ceil((2000-(performance.now()-game.began))/1000));subtitle.textContent='保持正视前方';chips.textContent=game.mode==='keys'?'方向键转向 · 空格回正 · Enter 暂停':'马上出发 · 移动鼠标模拟轻轻转头';}
  else if(phase==='paused'){eyebrow.textContent='FLIGHT PAUSED';title.className='small';title.textContent='暂停航行';subtitle.textContent=game.message;chips.textContent='继续时正视前方，重新校准朝向';}
- else if(phase==='result'){eyebrow.textContent=getLevel(game.levelId).label+' · '+(game.mode==='demo'?'演示不计成绩':'航行完成');title.className='small';title.textContent=game.mode==='demo'?'星空等你来':f.title;subtitle.textContent='穿越 '+f.hits+' / 12 · 最佳连击 '+f.bestCombo;chips.textContent=game.mode==='demo'?'45 秒星际之旅':f.score+' PTS';chips.className='result-score';}
+ else if(phase==='result'){eyebrow.textContent=getLevel(game.levelId).label+' · '+(game.mode==='demo'?'演示不计成绩':'航行完成');title.className='small';title.textContent=game.mode==='demo'?'星空等你来':f.title;subtitle.textContent='穿越 '+f.hits+' / '+getLevel(game.levelId).gateCount+' · 最佳连击 '+f.bestCombo;chips.textContent=game.mode==='demo'?'45 秒星际之旅':f.score+' PTS';chips.className='result-score';}
  previousPhase=phase;
 }
 stage.addEventListener('pointermove',e=>{const b=stage.getBoundingClientRect();mouse={yaw:(e.clientX-b.left-b.width/2)/b.width*.6,pitch:-(e.clientY-b.top-b.height/2)/b.height*.4};});

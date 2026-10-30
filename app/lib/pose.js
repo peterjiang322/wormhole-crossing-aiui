@@ -1,4 +1,6 @@
 import {clamp} from './flight.js';
+export const DEFAULT_YAW_SIGN=-1;
+export function yawActionLabel(sign){return sign===DEFAULT_YAW_SIGN?'反转左右':'恢复左右';}
 function unit(q){if(!q||q.length!==4||!Array.from(q).every(Number.isFinite))return null;const n=Math.hypot(...q);return n>.0001?Array.from(q,v=>v/n):null;}
 export function relativePose(current,origin){
  const q=unit(current),b=unit(origin);if(!q||!b)return null;
@@ -7,7 +9,7 @@ export function relativePose(current,origin){
  return {yaw:Math.atan2(2*(w*y+x*z),1-2*(x*x+y*y)),pitch:Math.asin(clamp(2*(w*x-y*z),-1,1))};
 }
 export class PoseInput {
- constructor({Orientation,Gyro,now=()=>Date.now(),report=()=>{}}={}){Object.assign(this,{Orientation,Gyro,now,report});this.sensor=null;this.epoch=0;this.value={yaw:0,pitch:0};this.lastValid=null;this.mode='off';this.yawSign=1;this.pitchSign=1;}
+ constructor({Orientation,Gyro,now=()=>Date.now(),report=()=>{}}={}){Object.assign(this,{Orientation,Gyro,now,report});this.sensor=null;this.epoch=0;this.value={yaw:0,pitch:0};this.lastValid=null;this.mode='off';this.yawSign=DEFAULT_YAW_SIGN;this.pitchSign=1;}
  start(){this.stop();this.startedAt=this.now();this.lastValid=null;this.lastTime=null;this.base=null;this.latest=null;this.value={yaw:0,pitch:0};
   if(this.Orientation&&this.attach(this.Orientation,'orientation'))return;
   if(this.Gyro&&this.attach(this.Gyro,'gyro'))return;
@@ -34,7 +36,7 @@ export class PoseInput {
   }
   if(!value)return;this.value={yaw:clamp(value.yaw,-.55,.55),pitch:clamp(value.pitch,-.4,.4)};this.lastValid=now;
  }
- get(){return {yaw:this.value.yaw*this.yawSign,pitch:this.value.pitch*this.pitchSign};}
+ get(){return {yaw:this.value.yaw*this.yawSign||0,pitch:this.value.pitch*this.pitchSign};}
  recenter(){if(this.latest)this.base=this.latest.slice();this.value={yaw:0,pitch:0};this.lastTime=null;}
  healthy(){return this.lastValid!==null&&this.now()-this.lastValid<1000;}
  timedOut(){return this.lastValid===null?this.now()-this.startedAt>2000:!this.healthy();}

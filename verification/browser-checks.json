@@ -68,5 +68,42 @@
     "seededGenerator": "420 seeds geometry and actual flight engine verified",
     "tests": 35,
     "deviceTested": false
+  },
+  "difficultyDirectionVersion": {
+    "version": "1.2.0",
+    "date": "2026-10-30",
+    "circlePercent": [
+      100,
+      30
+    ],
+    "speedPercent": [
+      100,
+      170
+    ],
+    "maxAdjacentStep": [
+      2.2,
+      3.8
+    ],
+    "duration": 45,
+    "gateCount": [
+      12,
+      21
+    ],
+    "defaultYawSign": -1,
+    "reverseSign": 1,
+    "restoreSign": -1,
+    "menuIMUChanged": false,
+    "settingsToggleObserved": true,
+    "level20Result": {
+      "elapsed": 45,
+      "hits": 21,
+      "total": 21,
+      "score": 5400,
+      "label": "演示不计成绩"
+    },
+    "tests": 39,
+    "seedFlights": 420,
+    "deviceTested": false,
+    "reader": "Ink 0.19.1 settings reverse/restore and level20 parameter page observed"
   }
 }
