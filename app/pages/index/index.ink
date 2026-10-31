@@ -3,6 +3,7 @@
 </script>
 <script setup>
 import wx from 'wx';
+import {getBriefing,getEnding} from '../../lib/story.js';
 import {MusicLoop} from '../../lib/music.js';
 import {TerminalText,BRIEFING_LINES} from '../../lib/briefing.js';
 import {createTtsRuntime} from '../../lib/tts.js';
@@ -14,13 +15,13 @@ import {MenuMotion} from '../../lib/menu-motion.js';
 import {LEVELS} from '../../lib/levels.js';
 
 export default {
- data:{terminalLines:['','','',''],terminalText:'',briefingSpeech:'',totalGates:12,levelId:0,levelLabel:'体验关',levelSummary:'原版体验路线 · 每关45秒',levelPreviewLabel:'体验关',levelPreviewSummary:'原版体验路线 · 每关45秒',phase:'ready',mode:'head',message:'小幅转头 · 穿越星门',seconds:45,score:0,hits:0,combo:0,bestCombo:0,title:'',countdown:2,feedback:'',sensor:'',menuButtons:[],buttonWidth:132,buttonRowWidth:416,menuScrollLeft:0,menuTrackLeft:0,menuHelp:'',soundLabel:'音效开',errorText:'',settings:false},
+ data:{briefingTitle:'舰长，请就座',endingTitle:'',endingText:'',terminalLines:['','','',''],terminalText:'',briefingSpeech:'',totalGates:12,levelId:0,levelLabel:'体验关',levelSummary:'原版体验路线 · 每关45秒',levelPreviewLabel:'体验关',levelPreviewSummary:'原版体验路线 · 每关45秒',phase:'ready',mode:'head',message:'小幅转头 · 穿越星门',seconds:45,score:0,hits:0,combo:0,bestCombo:0,title:'',countdown:2,feedback:'',sensor:'',menuButtons:[],buttonWidth:132,buttonRowWidth:416,menuScrollLeft:0,menuTrackLeft:0,menuHelp:'',soundLabel:'音效开',errorText:'',settings:false},
  onLoad(){
   this.tts=createTtsRuntime();this.terminal=new TerminalText({emit:text=>{if(this._visible)this.setData({terminalText:text,terminalLines:text.split('\n').concat(['','','','']).slice(0,4)});}});
   this._visible=false;this._ready=false;this._generation=0;this._soundOn=true;this._settings=false;this._renderFailures=0;this._canvasAttempts=0;this._menuPhase='';this._sounds={};
   this.music=new MusicLoop({Sound:typeof Sound==='undefined'?null:Sound,report:message=>{if(this._visible)this.setData({errorText:message});}});
   this.input=new PoseInput({Orientation:typeof AbsoluteOrientationSensor==='undefined'?null:AbsoluteOrientationSensor,Gyro:typeof Gyroscope==='undefined'?null:Gyroscope,report:message=>{if(this._visible)this.setData({errorText:message});}});
-  this.game=new Controller({input:this.input,emit:patch=>{if(!this._visible)return;this.setData(patch);this.music.update(patch.phase,this.game.levelId,this._soundOn);this.syncMenu(patch.phase);},sound:event=>this.playSound(event)});
+  this.game=new Controller({input:this.input,emit:patch=>{if(!this._visible)return;this.setData(patch);this.music.update(patch.phase,this.game.levelId,this._soundOn);this.syncEnding(patch.phase);this.syncMenu(patch.phase);},sound:event=>this.playSound(event)});
   this.menuMotion=new MenuMotion({emit:patch=>{if(this._visible)this.setData(patch);}});
   this.menu=new MenuController({Sensor:typeof Gyroscope==='undefined'?null:Gyroscope,emit:patch=>{if(this._visible){this.setData(patch);this.menuMotion.to(patch.menuScrollLeft);if(this.game.phase==='levels'){const level=LEVELS[this.menu.focus];this.setData({levelPreviewLabel:level?level.label:'返回首页',levelPreviewSummary:level?level.summary:'保留当前关卡选择'});}}},report:error=>this.setData({errorText:error.message||String(error)})});
  },
@@ -42,7 +43,8 @@ export default {
   this.menu.configure({buttons});if(phase==='levels')this.menu.focus=this.game.levelId;this.menu.show();
  },
  start(mode){this._settings=false;this.setData({settings:false,errorText:''});this.menu.hide();this._menuPhase='';this.game.beginBriefing(mode);this.showBriefing();},
- showBriefing(){this.terminal.start();let ok=false;if(this._soundOn)ok=this.tts.speak(BRIEFING_LINES.join(''),{lang:'zh-CN',rate:1});this.setData({briefingSpeech:this._soundOn?(ok?'飞船语音提示':'语音不可用 · 请阅读文字'):'音效已关闭 · 请阅读文字'});},
+ showBriefing(){const briefing=getBriefing(this.game.levelId);this.setData({briefingTitle:briefing.title});this.terminal.start(briefing.lines.map(line=>'> '+line).join('\n'));let ok=false;if(this._soundOn)ok=this.tts.speak(briefing.lines.join(''),{lang:'zh-CN',rate:1});this.setData({briefingSpeech:this._soundOn?(ok?'飞船语音提示':'语音不可用 · 请阅读文字'):'音效已关闭 · 请阅读文字'});},
+ syncEnding(phase){if(phase!=='result'){this._endingShown=false;this.setData({endingTitle:'',endingText:''});return;}if(this._endingShown)return;this._endingShown=true;const ending=getEnding(this.game.levelId);this.setData({endingTitle:ending?(this.game.mode==='demo'?'返航演示完成':ending.title):'',endingText:ending?ending.text:''});if(ending&&this._soundOn)this.tts.speak(ending.speech,{lang:'zh-CN',rate:1});},
  nextLevel(){if(this.game.nextLevel(true))this.showBriefing();},
  resume(){this.menu.hide();this._menuPhase='';this.game.resume();},
  openLevels(){this._settings=false;this.setData({settings:false});this.game.openLevels();},
@@ -106,9 +108,9 @@ export default {
   <view class="intro" style="display: {{settings ? 'flex' : 'none'}}"><text class="eyebrow">FLIGHT CONTROLS</text><text class="hero small">飞行设置</text><text class="sub">两轴可反转 · {{soundLabel}}</text><text class="tiny">小幅转头即可，原地体验；按键也能玩。</text></view>
   <view class="intro" style="display: {{phase === 'calibrating' ? 'flex' : 'none'}}"><text class="eyebrow">{{levelLabel}} · {{mode === 'demo' ? '演示不计成绩' : '准备启航'}}</text><text class="hero">{{countdown}}</text><text class="sub">保持正视前方</text><text class="tiny">{{mode === 'keys' ? '方向键转向 · 空格回正 · 确认键暂停' : '马上出发 · 原地轻轻转头即可'}}</text></view>
   <view class="intro" style="display: {{phase === 'paused' ? 'flex' : 'none'}}"><text class="eyebrow">FLIGHT PAUSED</text><text class="hero small">暂停航行</text><text class="sub">{{message}}</text><text class="tiny">继续时正视前方，重新校准朝向</text></view>
-  <view class="intro result" style="display: {{phase === 'result' ? 'flex' : 'none'}}"><text class="eyebrow">{{levelLabel}} · {{mode === 'demo' ? '演示不计成绩' : '航行完成'}}</text><text class="hero small">{{mode === 'demo' ? '星空等你来' : title}}</text><text class="result-score">{{mode === 'demo' ? '45 秒星际之旅' : score + ' PTS'}}</text><text class="sub">穿越 {{hits}} / {{totalGates}} · 最佳连击 {{bestCombo}}</text></view>
+  <view class="intro result" style="display: {{phase === 'result' ? 'flex' : 'none'}}"><text class="eyebrow">{{levelLabel}} · {{mode === 'demo' ? '演示不计成绩' : '航行完成'}}</text><text class="hero small">{{endingTitle || (mode === 'demo' ? '星空等你来' : title)}}</text><text class="result-score">{{mode === 'demo' ? '45 秒星际之旅' : score + ' PTS'}}</text><text class="sub">穿越 {{hits}} / {{totalGates}} · 最佳连击 {{bestCombo}}</text><text class="ending-copy">{{endingText}}</text></view>
   <view class="intro" style="display: {{phase === 'error' ? 'flex' : 'none'}}"><text class="hero small">画布暂不可用</text><text class="sub">{{message}}</text></view>
-  <view class="briefing-panel" style="display: {{phase === 'briefing' ? 'flex' : 'none'}}"><text class="briefing-title">舰长，请就座</text><view class="terminal-copy"><text>{{terminalLines[0]}}</text><text>{{terminalLines[1]}}</text><text>{{terminalLines[2]}}</text><text>{{terminalLines[3]}}</text></view><text class="tiny">{{briefingSpeech}}</text></view>
+  <view class="briefing-panel" style="display: {{phase === 'briefing' ? 'flex' : 'none'}}"><text class="briefing-title">{{briefingTitle}}</text><view class="terminal-copy"><text>{{terminalLines[0]}}</text><text>{{terminalLines[1]}}</text><text>{{terminalLines[2]}}</text><text>{{terminalLines[3]}}</text></view><text class="tiny">{{briefingSpeech}}</text></view>
   <view class="menu" style="display: {{phase !== 'flying' && phase !== 'calibrating' ? 'flex' : 'none'}}">
    <view class="menu-rail"><view class="menu-row" style="width: {{buttonRowWidth}}px; left: {{menuTrackLeft}}px"><card ink:for="{{menuButtons}}" ink:key="id" class="menu-card" style="width: {{buttonWidth}}px" data-id="{{item.id}}" bindtap="onAction"><view class="{{item.className}}"><text>{{item.label}}</text></view></card></view></view>
    <text class="menu-help">{{menuHelp}}</text>
@@ -118,7 +120,8 @@ export default {
 </page>
 <style>
 .briefing-panel { position: absolute; top: 40px; left: 16px; width: 416px; height: 192px; display: flex; flex-direction: column; padding: 12px 16px; box-sizing: border-box; background-color: #000000; border: 1px solid #40FF5E; gap: 8px; }
-.briefing-title { font-size: 24px; line-height: 30px; font-weight: bold; }
+.ending-copy { font-size: 12px; line-height: 18px; text-align: center; color: #40FF5E; }
+.briefing-title { font-size: 22px; line-height: 30px; font-weight: bold; }
 .terminal-copy { display: flex; flex-direction: column; font-size: 14px; line-height: 23px; height: 100px; color: #40FF5E; }
 page { background-color: #000000; color: #40FF5E; }
 .stage { width: 448px; height: 352px; position: relative; overflow: hidden; background-color: #000000; color: #40FF5E; }

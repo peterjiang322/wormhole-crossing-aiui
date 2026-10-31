@@ -57,7 +57,7 @@ npx aix preview dist/wormhole-roam.aix --html-out verification/aiui-reader.html
 
 ## 证据与边界
 
-见 `verification/REPORT.md` 和 `docs/DEVICE-ACCEPTANCE.md`。本地测试46项通过，静态检查和真实AIX打包通过；官方Ink 0.19.1 Reader渲染通过。具体浏览器与Reader验收结果记录在报告，不以合成输入外推真机效果。
+见 `verification/REPORT.md` 和 `docs/DEVICE-ACCEPTANCE.md`。本地测试47项通过，静态检查和真实AIX打包通过；官方Ink 0.19.1 Reader渲染通过。具体浏览器与Reader验收结果记录在报告，不以合成输入外推真机效果。
 
 这是**单画面的三维透视投影**：提供随头部方向变化的纵深感，不提供双目视差、6DoF、真实场景锚定或身体位移追踪。AIUI是运行平台，本游戏不调用AI模型；成绩由公开规则计算。
 
@@ -90,3 +90,7 @@ npx aix preview dist/wormhole-roam.aix --html-out verification/aiui-reader.html
 ## 1.3.1：虫洞回声背景音乐
 
 原创4小节芯片宇宙主题：体验关及1–5关80 BPM，6–10关92 BPM，11–15关104 BPM，16–20关116 BPM。音高不变；四个11025Hz单声道8-bit PCM WAV共440529字节（约430KiB），编辑用旋律MIDI另附。生成脚本为scripts/create-space-music.py。飞行时低音量播放，暂停/结束/隐藏停止，沿用音效开关。浏览器使用原生音频循环，AIUI Sound无loop及结束事件，按PCM时长定时重播，可能存在宿主调度带来的小接缝，需Rokid试听验收。
+
+## 1.4.0：虫洞返航剧情
+
+体验关保留完整安全提示；进阶第1–20关分别提供地点、局势、任务及短安全提示，统一 > 逐字显示与TTS。自由选关按当前选中的章节讲述，不声称玩家已通关前置关。最终关结束呈现胜利返航故事结局并尝试TTS，保留真实命中/分数；演示单独标注返航演示完成，不作为玩家通关成绩。完整剧情见docs/STORY.md。

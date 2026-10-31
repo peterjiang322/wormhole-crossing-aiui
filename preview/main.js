@@ -1,3 +1,4 @@
+import {getBriefing,getEnding} from '../app/lib/story.js';
 import {musicTrack} from '../app/lib/music.js';
 import {TerminalText,BRIEFING_LINES} from '../app/lib/briefing.js';
 import {DEFAULT_YAW_SIGN,yawActionLabel} from '../app/lib/pose.js';
@@ -20,7 +21,7 @@ const game=new Controller({input:pointer,now:()=>performance.now(),emit:renderUI
 const terminal=new TerminalText({emit:text=>{$('terminal-copy').textContent=text;}});
 let speechGeneration=0;
 function stopBriefing(){speechGeneration++;terminal.stop();if(typeof speechSynthesis!=='undefined')speechSynthesis.cancel();}
-function showBriefing(){const generation=++speechGeneration;terminal.start();let ok=false;try{if(soundOn&&typeof speechSynthesis!=='undefined'){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(BRIEFING_LINES.join(''));u.lang='zh-CN';u.onerror=()=>{if(generation!==speechGeneration||game.phase!=='briefing')return;$('briefing-speech').textContent='语音不可用 · 请阅读文字';};speechSynthesis.speak(u);ok=true;}}catch(_){}$('briefing-speech').textContent=!soundOn?'音效已关闭 · 请阅读文字':ok?'飞船语音提示':'语音不可用 · 请阅读文字';}
+function showBriefing(){const generation=++speechGeneration;const briefing=getBriefing(game.levelId);$('briefing-title').textContent=briefing.title;terminal.start(briefing.lines.map(line=>'> '+line).join('\n'));let ok=false;try{if(soundOn&&typeof speechSynthesis!=='undefined'){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(briefing.lines.join(''));u.lang='zh-CN';u.onerror=()=>{if(generation!==speechGeneration||game.phase!=='briefing')return;$('briefing-speech').textContent='语音不可用 · 请阅读文字';};speechSynthesis.speak(u);ok=true;}}catch(_){}$('briefing-speech').textContent=!soundOn?'音效已关闭 · 请阅读文字':ok?'飞船语音提示':'语音不可用 · 请阅读文字';}
 function begin(mode){settings=false;menu.hide();lastMenu='';mouse={yaw:0,pitch:0};center={...mouse};game.beginBriefing(mode);showBriefing();}
 function syncMenu(){
  const key=settings?'settings':game.phase;if(lastMenu===key)return;lastMenu=key;menu.hide();motion.reset();
@@ -39,7 +40,7 @@ let background=null,backgroundKey='',musicError='',musicGeneration=0;
 function stopMusic(){musicGeneration++;if(background){background.pause();background.removeAttribute('src');background.load();}background=null;backgroundKey='';musicError='';}
 function syncMusic(){const key=game.phase==='flying'&&soundOn?musicTrack(game.levelId).path:'';if(key===backgroundKey)return;stopMusic();if(!key)return;const generation=musicGeneration;backgroundKey=key;background=new Audio('../app'+key);background.loop=true;background.volume=.18;const failed=()=>{if(generation===musicGeneration&&game.phase==='flying'){musicError='背景音乐不可用 · 游戏可继续';$('sensor').textContent=musicError;}};background.onerror=failed;const started=background.play();if(started)started.catch(failed);}
 function renderUI(){
- if(!game)return;syncMenu();syncMusic();const f=game.flight,phase=game.phase,active=phase==='flying';
+ if(!game)return;if(previousPhase==='result'&&game.phase!=='result'&&game.phase!=='briefing')stopBriefing();syncMenu();syncMusic();const f=game.flight,phase=game.phase,active=phase==='flying';
  $('briefing-panel').hidden=phase!=='briefing';
  $('hud').hidden=!active;$('flight-footer').hidden=!active;$('intro').hidden=active||phase==='briefing';$('menu').hidden=active||phase==='calibrating';
  $('score').textContent=f.score;$('time').textContent=Math.ceil(45-f.elapsed)+'s';$('gates').textContent=f.hits+' / '+getLevel(game.levelId).gateCount;$('feedback').textContent=f.message;
@@ -47,13 +48,13 @@ function renderUI(){
  if(musicError)$('sensor').textContent=musicError;
  $('level-label').textContent='WORMHOLE / '+getLevel(game.levelId).label;$('mode-label').textContent=game.mode==='demo'?'自动演示':'虫洞漫游';$('status').textContent=active?'FLIGHT IN PROGRESS':phase==='result'?'MISSION COMPLETE':'READY TO EXPLORE';
  $('help').textContent='左右方向键选择 · 点击 / Enter 确认';$('input-label').textContent=game.mode==='demo'?'INPUT / AUTOPILOT DEMO':game.mode==='keys'?'INPUT / KEYBOARD':'INPUT / POINTER → HEAD POSE';
- const title=$('title'),subtitle=$('subtitle'),chips=$('chips'),eyebrow=$('eyebrow');title.className='';chips.className='';
+ const title=$('title'),subtitle=$('subtitle'),chips=$('chips'),eyebrow=$('eyebrow');$('ending-copy').textContent=phase==='result'?(getEnding(game.levelId)?.text||''):'';title.className='';chips.className='';
  if(settings){eyebrow.textContent='FLIGHT CONTROLS';title.textContent='飞行设置';title.className='small';subtitle.textContent='两轴可反转 · 音效'+(soundOn?'开':'关');chips.textContent='小幅转头即可，原地体验；按键也能玩。';}
  else if(phase==='ready'){eyebrow.textContent='SPATIAL JOY · FLIGHT EXPERIENCE';title.textContent='虫洞漫游';subtitle.textContent=getLevel(game.levelId).label+' · 每关45秒';chips.textContent=getLevel(game.levelId).summary;}
  else if(phase==='levels'){renderLevelPreview();}
  else if(phase==='calibrating'){eyebrow.textContent=getLevel(game.levelId).label+' · '+(game.mode==='demo'?'演示不计成绩':'准备启航');title.textContent=Math.max(1,Math.ceil((2000-(performance.now()-game.began))/1000));subtitle.textContent='保持正视前方';chips.textContent=game.mode==='keys'?'方向键转向 · 空格回正 · Enter 暂停':'马上出发 · 移动鼠标模拟轻轻转头';}
  else if(phase==='paused'){eyebrow.textContent='FLIGHT PAUSED';title.className='small';title.textContent='暂停航行';subtitle.textContent=game.message;chips.textContent='继续时正视前方，重新校准朝向';}
- else if(phase==='result'){eyebrow.textContent=getLevel(game.levelId).label+' · '+(game.mode==='demo'?'演示不计成绩':'航行完成');title.className='small';title.textContent=game.mode==='demo'?'星空等你来':f.title;subtitle.textContent='穿越 '+f.hits+' / '+getLevel(game.levelId).gateCount+' · 最佳连击 '+f.bestCombo;chips.textContent=game.mode==='demo'?'45 秒星际之旅':f.score+' PTS';chips.className='result-score';}
+ else if(phase==='result'){eyebrow.textContent=getLevel(game.levelId).label+' · '+(game.mode==='demo'?'演示不计成绩':'航行完成');title.className='small';const ending=getEnding(game.levelId);title.textContent=ending?(game.mode==='demo'?'返航演示完成':ending.title):game.mode==='demo'?'星空等你来':f.title;if(ending&&previousPhase!=='result'&&soundOn){try{const u=new SpeechSynthesisUtterance(ending.speech);u.lang='zh-CN';speechSynthesis.speak(u);}catch(_){}}subtitle.textContent='穿越 '+f.hits+' / '+getLevel(game.levelId).gateCount+' · 最佳连击 '+f.bestCombo;chips.textContent=game.mode==='demo'?'45 秒星际之旅':f.score+' PTS';chips.className='result-score';}
  previousPhase=phase;
 }
 stage.addEventListener('pointermove',e=>{const b=stage.getBoundingClientRect();mouse={yaw:(e.clientX-b.left-b.width/2)/b.width*.6,pitch:-(e.clientY-b.top-b.height/2)/b.height*.4};});
