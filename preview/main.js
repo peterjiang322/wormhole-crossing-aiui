@@ -1,3 +1,4 @@
+import {musicTrack} from '../app/lib/music.js';
 import {TerminalText,BRIEFING_LINES} from '../app/lib/briefing.js';
 import {DEFAULT_YAW_SIGN,yawActionLabel} from '../app/lib/pose.js';
 import {Controller} from '../app/lib/controller.js';
@@ -34,12 +35,16 @@ function syncMenu(){
  menu.configure({buttons});if(game.phase==='levels')menu.focus=game.levelId;menu.show();
 }
 function renderLevelPreview(){const p=LEVELS[menu.focus];$('eyebrow').textContent='自由选关 · 体验关 + 20关';$('title').className='small';$('title').textContent=p?p.label:'返回首页';$('subtitle').textContent=p?p.summary:'保留当前关卡选择';$('chips').textContent='左右选择 · 点击确认 · 无需解锁';}
+let background=null,backgroundKey='',musicError='',musicGeneration=0;
+function stopMusic(){musicGeneration++;if(background){background.pause();background.removeAttribute('src');background.load();}background=null;backgroundKey='';musicError='';}
+function syncMusic(){const key=game.phase==='flying'&&soundOn?musicTrack(game.levelId).path:'';if(key===backgroundKey)return;stopMusic();if(!key)return;const generation=musicGeneration;backgroundKey=key;background=new Audio('../app'+key);background.loop=true;background.volume=.18;const failed=()=>{if(generation===musicGeneration&&game.phase==='flying'){musicError='背景音乐不可用 · 游戏可继续';$('sensor').textContent=musicError;}};background.onerror=failed;const started=background.play();if(started)started.catch(failed);}
 function renderUI(){
- if(!game)return;syncMenu();const f=game.flight,phase=game.phase,active=phase==='flying';
+ if(!game)return;syncMenu();syncMusic();const f=game.flight,phase=game.phase,active=phase==='flying';
  $('briefing-panel').hidden=phase!=='briefing';
  $('hud').hidden=!active;$('flight-footer').hidden=!active;$('intro').hidden=active||phase==='briefing';$('menu').hidden=active||phase==='calibrating';
  $('score').textContent=f.score;$('time').textContent=Math.ceil(45-f.elapsed)+'s';$('gates').textContent=f.hits+' / '+getLevel(game.levelId).gateCount;$('feedback').textContent=f.message;
  $('sensor').textContent=game.mode==='demo'?'自动演示 · 不计成绩':game.mode==='keys'?'方向键转向 · 空格回正':'鼠标模拟头动 · 空格回正';
+ if(musicError)$('sensor').textContent=musicError;
  $('level-label').textContent='WORMHOLE / '+getLevel(game.levelId).label;$('mode-label').textContent=game.mode==='demo'?'自动演示':'虫洞漫游';$('status').textContent=active?'FLIGHT IN PROGRESS':phase==='result'?'MISSION COMPLETE':'READY TO EXPLORE';
  $('help').textContent='左右方向键选择 · 点击 / Enter 确认';$('input-label').textContent=game.mode==='demo'?'INPUT / AUTOPILOT DEMO':game.mode==='keys'?'INPUT / KEYBOARD':'INPUT / POINTER → HEAD POSE';
  const title=$('title'),subtitle=$('subtitle'),chips=$('chips'),eyebrow=$('eyebrow');title.className='';chips.className='';
@@ -56,7 +61,7 @@ $('pause').onclick=()=>game.pause();$('recenter').onclick=()=>{game.recenter();}
 document.addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Enter','Escape',' '].includes(e.key))return;e.preventDefault();if(game.phase==='flying'){if(e.key.startsWith('Arrow')&&game.mode==='head'){game.mode='keys';game.keyPose={...game.filtered};}game.key(e.key);}else if(game.phase==='calibrating'){if(e.key==='Enter')game.pause('校准已暂停');}else if(e.key==='Escape'&&game.phase==='briefing'){stopBriefing();game.home();}else menu.key({code:e.key,preventDefault(){}});});
 function resize(){const shell=document.querySelector('.display-shell'),width=shell.clientWidth-28,scale=width/448;stage.style.transform='scale('+scale+')';shell.style.height=(352*scale+28)+'px';}new ResizeObserver(resize).observe(document.querySelector('.display-shell'));resize();
 function frame(time){game.tick();const active=['flying','paused','result'].includes(game.phase);drawScene(ctx,game.flight,active?game.flight.pose:{yaw:Math.sin(time/5000)*.035,pitch:0},time/1000,{phase:game.phase,menu:!['flying','paused'].includes(game.phase)});frames++;if(time-fpsAt>1000){$('fps').textContent=Math.round(frames*1000/(time-fpsAt))+' FPS';fpsAt=time;frames=0;}raf=requestAnimationFrame(frame);}
-function show(){lastMenu='';game.show();raf=requestAnimationFrame(frame);}document.addEventListener('visibilitychange',()=>{if(document.hidden){stopBriefing();cancelAnimationFrame(raf);game.hide();menu.hide();motion.stop();audio?.suspend();}else{audio?.resume();show();}});window.addEventListener('pagehide',()=>{stopBriefing();cancelAnimationFrame(raf);game.hide();menu.hide();motion.stop();audio?.close();});
+function show(){lastMenu='';game.show();raf=requestAnimationFrame(frame);}document.addEventListener('visibilitychange',()=>{if(document.hidden){stopMusic();stopBriefing();cancelAnimationFrame(raf);game.hide();menu.hide();motion.stop();audio?.suspend();}else{audio?.resume();show();}});window.addEventListener('pagehide',()=>{stopMusic();stopBriefing();cancelAnimationFrame(raf);game.hide();menu.hide();motion.stop();audio?.close();});
 // Read-only diagnostics for local acceptance; no simulated results or time acceleration.
-window.wormhole={get state(){return {levelId:game.levelId,levelLabel:getLevel(game.levelId).label,phase:game.phase,mode:game.mode,elapsed:game.flight.elapsed,hits:game.flight.hits,score:game.flight.score,menuScroll:Math.round(motion.position),focus:menu.focus};}};
+window.wormhole={get state(){return {musicTrack:backgroundKey,musicPlaying:!!background&&!background.paused,musicError,levelId:game.levelId,levelLabel:getLevel(game.levelId).label,phase:game.phase,mode:game.mode,elapsed:game.flight.elapsed,hits:game.flight.hits,score:game.flight.score,menuScroll:Math.round(motion.position),focus:menu.focus};}};
 show();

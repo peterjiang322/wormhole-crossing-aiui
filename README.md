@@ -57,7 +57,7 @@ npx aix preview dist/wormhole-roam.aix --html-out verification/aiui-reader.html
 
 ## 证据与边界
 
-见 `verification/REPORT.md` 和 `docs/DEVICE-ACCEPTANCE.md`。本地测试43项通过，静态检查和真实AIX打包通过；官方Ink 0.19.1 Reader渲染通过。具体浏览器与Reader验收结果记录在报告，不以合成输入外推真机效果。
+见 `verification/REPORT.md` 和 `docs/DEVICE-ACCEPTANCE.md`。本地测试46项通过，静态检查和真实AIX打包通过；官方Ink 0.19.1 Reader渲染通过。具体浏览器与Reader验收结果记录在报告，不以合成输入外推真机效果。
 
 这是**单画面的三维透视投影**：提供随头部方向变化的纵深感，不提供双目视差、6DoF、真实场景锚定或身体位移追踪。AIUI是运行平台，本游戏不调用AI模型；成绩由公开规则计算。
 
@@ -86,3 +86,7 @@ npx aix preview dist/wormhole-roam.aix --html-out verification/aiui-reader.html
 ## 1.3.0：飞船启航提示
 
 开始、重玩、下一关均先进入提示弹窗，返回键可退出。提示等待期间没有飞行计时与游戏传感器；隐藏时清理逐字显示定时器，丢弃迟到回调。关闭音效时也不播TTS；TTS调用失败明确回退文字。AIUI未提供可靠的播报结束/取消API，不以估时判断播报结束，不依赖语音完成自动启航；宿主已经接收的播报可能持续到该短句结束。浏览器语音独立适配，效果不代替Rokid真机验收。
+
+## 1.3.1：虫洞回声背景音乐
+
+原创4小节芯片宇宙主题：体验关及1–5关80 BPM，6–10关92 BPM，11–15关104 BPM，16–20关116 BPM。音高不变；四个11025Hz单声道8-bit PCM WAV共440529字节（约430KiB），编辑用旋律MIDI另附。生成脚本为scripts/create-space-music.py。飞行时低音量播放，暂停/结束/隐藏停止，沿用音效开关。浏览器使用原生音频循环，AIUI Sound无loop及结束事件，按PCM时长定时重播，可能存在宿主调度带来的小接缝，需Rokid试听验收。

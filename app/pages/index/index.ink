@@ -3,6 +3,7 @@
 </script>
 <script setup>
 import wx from 'wx';
+import {MusicLoop} from '../../lib/music.js';
 import {TerminalText,BRIEFING_LINES} from '../../lib/briefing.js';
 import {createTtsRuntime} from '../../lib/tts.js';
 import {PoseInput,yawActionLabel} from '../../lib/pose.js';
@@ -17,8 +18,9 @@ export default {
  onLoad(){
   this.tts=createTtsRuntime();this.terminal=new TerminalText({emit:text=>{if(this._visible)this.setData({terminalText:text,terminalLines:text.split('\n').concat(['','','','']).slice(0,4)});}});
   this._visible=false;this._ready=false;this._generation=0;this._soundOn=true;this._settings=false;this._renderFailures=0;this._canvasAttempts=0;this._menuPhase='';this._sounds={};
+  this.music=new MusicLoop({Sound:typeof Sound==='undefined'?null:Sound,report:message=>{if(this._visible)this.setData({errorText:message});}});
   this.input=new PoseInput({Orientation:typeof AbsoluteOrientationSensor==='undefined'?null:AbsoluteOrientationSensor,Gyro:typeof Gyroscope==='undefined'?null:Gyroscope,report:message=>{if(this._visible)this.setData({errorText:message});}});
-  this.game=new Controller({input:this.input,emit:patch=>{if(!this._visible)return;this.setData(patch);this.syncMenu(patch.phase);},sound:event=>this.playSound(event)});
+  this.game=new Controller({input:this.input,emit:patch=>{if(!this._visible)return;this.setData(patch);this.music.update(patch.phase,this.game.levelId,this._soundOn);this.syncMenu(patch.phase);},sound:event=>this.playSound(event)});
   this.menuMotion=new MenuMotion({emit:patch=>{if(this._visible)this.setData(patch);}});
   this.menu=new MenuController({Sensor:typeof Gyroscope==='undefined'?null:Gyroscope,emit:patch=>{if(this._visible){this.setData(patch);this.menuMotion.to(patch.menuScrollLeft);if(this.game.phase==='levels'){const level=LEVELS[this.menu.focus];this.setData({levelPreviewLabel:level?level.label:'返回首页',levelPreviewSummary:level?level.summary:'保留当前关卡选择'});}}},report:error=>this.setData({errorText:error.message||String(error)})});
  },
@@ -47,7 +49,7 @@ export default {
  openSettings(){this._settings=true;this.setData({settings:true});this.syncMenu(this.game.phase);},
  closeSettings(){this._settings=false;this.setData({settings:false});this.syncMenu(this.game.phase);},
  flipAxis(axis){if(axis==='yaw')this.input.yawSign*=-1;else this.input.pitchSign*=-1;this._menuPhase='';this.syncMenu(this.game.phase);},
- toggleSound(){this._soundOn=!this._soundOn;this.stopSounds();this.setData({soundLabel:this._soundOn?'音效开':'音效关'});this._menuPhase='';this.syncMenu(this.game.phase);},
+ toggleSound(){this._soundOn=!this._soundOn;this.music.update(this.game.phase,this.game.levelId,this._soundOn);this.stopSounds();this.setData({soundLabel:this._soundOn?'音效开':'音效关'});this._menuPhase='';this.syncMenu(this.game.phase);},
  onAction(event){if(!this._visible)return;const id=event?.currentTarget?.dataset?.id||event?.target?.dataset?.id;return id?this.menu.tap(id):this.menu.confirm();},
  onPause(){if(this.game.phase==='flying')this.game.pause();},
  onRecenter(){if(this.game.phase==='flying')this.game.recenter();},
@@ -72,7 +74,7 @@ export default {
   }catch(e){if(++this._renderFailures>=3)this.canvasFailed(e);}
  },
  canvasFailed(error){
-  if(this._timer)clearInterval(this._timer);this._timer=null;this._ctx=null;this.input.stop();this.stopSounds();this.game.phase='error';this.game.message='画布不可用，请重试';this._settings=false;this._menuPhase='';this.setData({settings:false,errorText:error.message||String(error)});this.game.publish();
+  if(this._timer)clearInterval(this._timer);this._timer=null;this._ctx=null;this.input.stop();this.music.stop();this.stopSounds();this.game.phase='error';this.game.message='画布不可用，请重试';this._settings=false;this._menuPhase='';this.setData({settings:false,errorText:error.message||String(error)});this.game.publish();
  },
  retryCanvas(){this._menuPhase='';this.game.home();this.setData({errorText:''});this.beginRender();},
  playSound(event){
@@ -80,7 +82,7 @@ export default {
   try{if(typeof Sound==='undefined')return;const name=event==='finish'?'finish':'gate';let sound=this._sounds[name];if(!sound){sound=new Sound('/assets/'+name+'.wav');sound.volume=.35;this._sounds[name]=sound;}sound.play();}catch(e){this.setData({errorText:'音效不可用 · 游戏可继续'});}
  },
  stopSounds(){for(const name of Object.keys(this._sounds)){try{this._sounds[name].stop();this._sounds[name].destroy();}catch(_){}}this._sounds={};},
- cleanup(){this.terminal.stop();this.tts.clearPendingCompletion();this._visible=false;this._generation++;if(this._timer)clearInterval(this._timer);this._timer=null;this._ctx=null;this.menu.hide();this.menuMotion.stop();this.game.hide();this.stopSounds();}
+ cleanup(){this.music.stop();this.terminal.stop();this.tts.clearPendingCompletion();this._visible=false;this._generation++;if(this._timer)clearInterval(this._timer);this._timer=null;this._ctx=null;this.menu.hide();this.menuMotion.stop();this.game.hide();this.stopSounds();}
 };
 </script>
 <page>

@@ -1,3 +1,4 @@
+import {MusicLoop} from '../app/lib/music.js';
 import {TerminalText,BRIEFING_LINES} from '../app/lib/briefing.js';
 const {createTtsRuntime}=await import('data:text/javascript,'+encodeURIComponent(fs.readFileSync(new URL('../app/lib/tts.js',import.meta.url),'utf8').replace("import wx from 'wx';","const wx={speech:{playTTS:()=>''}};")));
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
@@ -9,12 +10,12 @@ function pageHarness(){
  const code=fs.readFileSync(new URL('../app/pages/index/index.ink',import.meta.url),'utf8').match(/<script setup>([\s\S]*?)<\/script>/)[1].replace(/^import .*;$/gm,'').replace('export default','return');
  let now=0;const active=new Set(),timers=new Map();let serial=0;const ctx=context();
  class Sensor{constructor(){this.events={};}addEventListener(k,f){this.events[k]=f;}removeEventListener(k){delete this.events[k];}start(){active.add(this);}stop(){active.delete(this);}read(){this.quaternion=[0,0,0,1];this.x=0;this.y=0;this.events.reading?.();}}
- const build=new Function('wx','PoseInput','yawActionLabel','Controller','drawScene','MenuController','MenuMotion','LEVELS','Gyroscope','AbsoluteOrientationSensor','setInterval','clearInterval','Date','Sound','TerminalText','BRIEFING_LINES','createTtsRuntime',code);
+ const build=new Function('wx','PoseInput','yawActionLabel','Controller','drawScene','MenuController','MenuMotion','LEVELS','Gyroscope','AbsoluteOrientationSensor','setInterval','clearInterval','Date','Sound','TerminalText','BRIEFING_LINES','createTtsRuntime','MusicLoop',code);
  class TestInput extends PoseInput{constructor(options){super({...options,now:()=>now});}}
  class TestController extends Controller{constructor(options){super({...options,now:()=>now});}}
  class TestMotion extends MenuMotion{constructor(options){super({...options,now:()=>now,schedule:fn=>{timers.set(++serial,fn);return serial;},cancel:id=>timers.delete(id)});}}
  class TestTerminal extends TerminalText{constructor(options){super({...options,schedule:fn=>{timers.set(++serial,fn);return serial;},cancel:id=>timers.delete(id)});}}
- const page=build({createCanvasContext:()=>ctx},TestInput,yawActionLabel,TestController,drawScene,MenuController,TestMotion,LEVELS,Sensor,Sensor,fn=>{timers.set(++serial,fn);return serial;},id=>timers.delete(id),{now:()=>now},undefined,TestTerminal,BRIEFING_LINES,createTtsRuntime);
+ const page=build({createCanvasContext:()=>ctx},TestInput,yawActionLabel,TestController,drawScene,MenuController,TestMotion,LEVELS,Sensor,Sensor,fn=>{timers.set(++serial,fn);return serial;},id=>timers.delete(id),{now:()=>now},undefined,TestTerminal,BRIEFING_LINES,createTtsRuntime,MusicLoop);
  page.setData=()=>{}; // Deliberately asynchronous/no echo: business must never read UI data back.
  page.onLoad();return {page,ctx,active,timers,setNow(v){now=v;}};
 }

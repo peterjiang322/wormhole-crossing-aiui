@@ -1,0 +1,41 @@
+{
+  "title": "虫洞回声 / Wormhole Echoes",
+  "composer": "Original procedural composition for Wormhole Roam",
+  "format": "11025 Hz, mono, unsigned 8-bit PCM WAV",
+  "bars": 4,
+  "beats": 16,
+  "tracks": [
+    {
+      "band": 0,
+      "bpm": 80,
+      "file": "cosmic-80.wav",
+      "duration": 12.0,
+      "bytes": 132344,
+      "levels": "体验关及1–5"
+    },
+    {
+      "band": 1,
+      "bpm": 92,
+      "file": "cosmic-92.wav",
+      "duration": 10.434739229024943,
+      "bytes": 115087,
+      "levels": "6–10"
+    },
+    {
+      "band": 2,
+      "bpm": 104,
+      "file": "cosmic-104.wav",
+      "duration": 9.230748299319728,
+      "bytes": 101813,
+      "levels": "11–15"
+    },
+    {
+      "band": 3,
+      "bpm": 116,
+      "file": "cosmic-116.wav",
+      "duration": 8.275827664399094,
+      "bytes": 91285,
+      "levels": "16–20"
+    }
+  ]
+}
