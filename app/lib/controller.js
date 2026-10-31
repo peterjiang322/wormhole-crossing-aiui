@@ -4,13 +4,15 @@ export class Controller {
  constructor({input=null,now=()=>Date.now(),emit=()=>{},sound=()=>{}}={}){Object.assign(this,{input,now,emit,sound});this.levelId=0;this.flight=new Flight(this.levelId);this.phase='ready';this.mode='head';this.visible=false;this.message='';this.keyPose={yaw:0,pitch:0};this.filtered={yaw:0,pitch:0};this.lastHud=0;this.last=0;}
  show(){this.visible=true;this.home();}
  home(){this.input?.stop();this.phase='ready';this.flight=new Flight(this.levelId);this.message='小幅转头 · 穿越星门';this.publish();}
+ beginBriefing(mode='head'){if(!this.visible)return;this.input?.stop();this.mode=mode;this.phase='briefing';this.publish();}
+ launch(){if(this.visible&&this.phase==='briefing')this.start(this.mode);}
  start(mode='head'){
   if(!this.visible)return;this.resumePending=false;this.input?.stop();this.mode=mode;this.phase='calibrating';this.began=this.now();this.last=this.began;this.keyPose={yaw:0,pitch:0};this.filtered={yaw:0,pitch:0};this.message='保持正视前方';this.flight=new Flight(this.levelId);
   if(mode==='head'){if(!this.input){this.phase='paused';this.message='头动不可用 · 请选择按键模式';}else this.input.start();}this.publish();
  }
  openLevels(){if(!this.visible||!['ready','result'].includes(this.phase))return false;this.input?.stop();this.phase='levels';this.publish();return true;}
  selectLevel(id){getLevel(id);if(!this.visible||!['ready','levels','result'].includes(this.phase))return false;this.levelId=id;this.home();return true;}
- nextLevel(){if(!this.visible||this.phase!=='result'||this.levelId>=LEVELS.length-1)return false;this.levelId++;this.start(this.mode);return true;}
+ nextLevel(briefing=false){if(!this.visible||this.phase!=='result'||this.levelId>=LEVELS.length-1)return false;this.levelId++;if(briefing)this.beginBriefing(this.mode);else this.start(this.mode);return true;}
  tick(){
   if(!this.visible)return;const now=this.now(),dt=clamp((now-this.last)/1000,0,45);this.last=now;
   if(this.phase==='calibrating'){

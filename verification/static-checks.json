@@ -1,5 +1,5 @@
 {
-  "checks": 55,
+  "checks": 61,
   "passed": true,
   "level": "L1 source checks; not device validation",
   "permissions": []

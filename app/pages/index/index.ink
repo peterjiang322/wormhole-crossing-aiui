@@ -3,6 +3,8 @@
 </script>
 <script setup>
 import wx from 'wx';
+import {TerminalText,BRIEFING_LINES} from '../../lib/briefing.js';
+import {createTtsRuntime} from '../../lib/tts.js';
 import {PoseInput,yawActionLabel} from '../../lib/pose.js';
 import {Controller} from '../../lib/controller.js';
 import {drawScene} from '../../lib/renderer.js';
@@ -11,8 +13,9 @@ import {MenuMotion} from '../../lib/menu-motion.js';
 import {LEVELS} from '../../lib/levels.js';
 
 export default {
- data:{totalGates:12,levelId:0,levelLabel:'体验关',levelSummary:'原版体验路线 · 每关45秒',levelPreviewLabel:'体验关',levelPreviewSummary:'原版体验路线 · 每关45秒',phase:'ready',mode:'head',message:'小幅转头 · 穿越星门',seconds:45,score:0,hits:0,combo:0,bestCombo:0,title:'',countdown:2,feedback:'',sensor:'',menuButtons:[],buttonWidth:132,buttonRowWidth:416,menuScrollLeft:0,menuTrackLeft:0,menuHelp:'',soundLabel:'音效开',errorText:'',settings:false},
+ data:{terminalLines:['','','',''],terminalText:'',briefingSpeech:'',totalGates:12,levelId:0,levelLabel:'体验关',levelSummary:'原版体验路线 · 每关45秒',levelPreviewLabel:'体验关',levelPreviewSummary:'原版体验路线 · 每关45秒',phase:'ready',mode:'head',message:'小幅转头 · 穿越星门',seconds:45,score:0,hits:0,combo:0,bestCombo:0,title:'',countdown:2,feedback:'',sensor:'',menuButtons:[],buttonWidth:132,buttonRowWidth:416,menuScrollLeft:0,menuTrackLeft:0,menuHelp:'',soundLabel:'音效开',errorText:'',settings:false},
  onLoad(){
+  this.tts=createTtsRuntime();this.terminal=new TerminalText({emit:text=>{if(this._visible)this.setData({terminalText:text,terminalLines:text.split('\n').concat(['','','','']).slice(0,4)});}});
   this._visible=false;this._ready=false;this._generation=0;this._soundOn=true;this._settings=false;this._renderFailures=0;this._canvasAttempts=0;this._menuPhase='';this._sounds={};
   this.input=new PoseInput({Orientation:typeof AbsoluteOrientationSensor==='undefined'?null:AbsoluteOrientationSensor,Gyro:typeof Gyroscope==='undefined'?null:Gyroscope,report:message=>{if(this._visible)this.setData({errorText:message});}});
   this.game=new Controller({input:this.input,emit:patch=>{if(!this._visible)return;this.setData(patch);this.syncMenu(patch.phase);},sound:event=>this.playSound(event)});
@@ -27,15 +30,18 @@ export default {
   this.menu.hide();this.menuMotion.reset();
   if(phase==='flying'||phase==='calibrating'){return;}
   let buttons;
-  if(this._settings){buttons=[{id:'yaw',label:yawActionLabel(this.input.yawSign),run:()=>this.flipAxis('yaw')},{id:'pitch',label:this.input.pitchSign===1?'反转上下':'恢复上下',run:()=>this.flipAxis('pitch')},{id:'sound',label:this._soundOn?'关闭音效':'开启音效',run:()=>this.toggleSound()},{id:'close',label:'返回',run:()=>this.closeSettings()}];}
+  if(phase==='briefing'){buttons=[{id:'launch',label:'开启旅程',run:()=>{this.terminal.stop();this.tts.clearPendingCompletion();this.game.launch();}}];}
+  else if(this._settings){buttons=[{id:'yaw',label:yawActionLabel(this.input.yawSign),run:()=>this.flipAxis('yaw')},{id:'pitch',label:this.input.pitchSign===1?'反转上下':'恢复上下',run:()=>this.flipAxis('pitch')},{id:'sound',label:this._soundOn?'关闭音效':'开启音效',run:()=>this.toggleSound()},{id:'close',label:'返回',run:()=>this.closeSettings()}];}
   else if(phase==='levels'){buttons=LEVELS.map(level=>({id:'level-'+level.id,label:level.label,run:()=>this.game.selectLevel(level.id)})).concat([{id:'home',label:'返回首页',run:()=>this.game.home()}]);}
   else if(phase==='ready'){buttons=[{id:'start',label:'开始飞行',run:()=>this.start('head')},{id:'demo',label:'观赏演示',run:()=>this.start('demo')},{id:'levels',label:'自由选关',run:()=>this.openLevels()},{id:'settings',label:'设置',run:()=>this.openSettings()},{id:'keys',label:'按键模式',run:()=>this.start('keys')}];}
   else if(phase==='paused'){buttons=[{id:'resume',label:'继续飞行',run:()=>this.resume()},{id:'keys',label:'改用按键',run:()=>this.game.useKeys()},{id:'home',label:'结束本局',run:()=>this.game.home()}];}
-  else if(phase==='result'){buttons=(this.game.levelId<20?[{id:'next',label:this.game.mode==='demo'?'下一关演示':'下一关',run:()=>this.game.nextLevel()}]:[]).concat([{id:'again',label:this.game.mode==='demo'?'再看一次':'再来一次',run:()=>this.start(this.game.mode)},{id:'levels',label:'自由选关',run:()=>this.openLevels()},{id:'home',label:'回到首页',run:()=>this.game.home()}]);}
+  else if(phase==='result'){buttons=(this.game.levelId<20?[{id:'next',label:this.game.mode==='demo'?'下一关演示':'下一关',run:()=>this.nextLevel()}]:[]).concat([{id:'again',label:this.game.mode==='demo'?'再看一次':'再来一次',run:()=>this.start(this.game.mode)},{id:'levels',label:'自由选关',run:()=>this.openLevels()},{id:'home',label:'回到首页',run:()=>this.game.home()}]);}
   else{buttons=[{id:'retry',label:'重试画布',run:()=>this.retryCanvas()},{id:'home',label:'回到首页',run:()=>{this.game.home();this.retryCanvas();}}];}
   this.menu.configure({buttons});if(phase==='levels')this.menu.focus=this.game.levelId;this.menu.show();
  },
- start(mode){this._settings=false;this.setData({settings:false,errorText:''});this.menu.hide();this._menuPhase='';this.game.start(mode);},
+ start(mode){this._settings=false;this.setData({settings:false,errorText:''});this.menu.hide();this._menuPhase='';this.game.beginBriefing(mode);this.showBriefing();},
+ showBriefing(){this.terminal.start();let ok=false;if(this._soundOn)ok=this.tts.speak(BRIEFING_LINES.join(''),{lang:'zh-CN',rate:1});this.setData({briefingSpeech:this._soundOn?(ok?'飞船语音提示':'语音不可用 · 请阅读文字'):'音效已关闭 · 请阅读文字'});},
+ nextLevel(){if(this.game.nextLevel(true))this.showBriefing();},
  resume(){this.menu.hide();this._menuPhase='';this.game.resume();},
  openLevels(){this._settings=false;this.setData({settings:false});this.game.openLevels();},
  openSettings(){this._settings=true;this.setData({settings:true});this.syncMenu(this.game.phase);},
@@ -46,7 +52,8 @@ export default {
  onPause(){if(this.game.phase==='flying')this.game.pause();},
  onRecenter(){if(this.game.phase==='flying')this.game.recenter();},
  onKeyUp(event){
-  if(!this._visible||event.code==='Backspace')return;
+  if(!this._visible)return;
+  if(event.code==='Backspace'){if(this.game.phase==='briefing'){event.preventDefault();this.terminal.stop();this.tts.clearPendingCompletion();this.game.home();}return;}
   if(this.game.phase==='flying'){if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Enter','Escape',' ','Space'].includes(event.code)){event.preventDefault();this.game.key(event.code);}return;}
   if(this.game.phase==='calibrating'){if(event.code==='Enter'){event.preventDefault();this.game.pause('校准已暂停');}return;}
   this.menu.key(event);
@@ -73,7 +80,7 @@ export default {
   try{if(typeof Sound==='undefined')return;const name=event==='finish'?'finish':'gate';let sound=this._sounds[name];if(!sound){sound=new Sound('/assets/'+name+'.wav');sound.volume=.35;this._sounds[name]=sound;}sound.play();}catch(e){this.setData({errorText:'音效不可用 · 游戏可继续'});}
  },
  stopSounds(){for(const name of Object.keys(this._sounds)){try{this._sounds[name].stop();this._sounds[name].destroy();}catch(_){}}this._sounds={};},
- cleanup(){this._visible=false;this._generation++;if(this._timer)clearInterval(this._timer);this._timer=null;this._ctx=null;this.menu.hide();this.menuMotion.stop();this.game.hide();this.stopSounds();}
+ cleanup(){this.terminal.stop();this.tts.clearPendingCompletion();this._visible=false;this._generation++;if(this._timer)clearInterval(this._timer);this._timer=null;this._ctx=null;this.menu.hide();this.menuMotion.stop();this.game.hide();this.stopSounds();}
 };
 </script>
 <page>
@@ -99,7 +106,7 @@ export default {
   <view class="intro" style="display: {{phase === 'paused' ? 'flex' : 'none'}}"><text class="eyebrow">FLIGHT PAUSED</text><text class="hero small">暂停航行</text><text class="sub">{{message}}</text><text class="tiny">继续时正视前方，重新校准朝向</text></view>
   <view class="intro result" style="display: {{phase === 'result' ? 'flex' : 'none'}}"><text class="eyebrow">{{levelLabel}} · {{mode === 'demo' ? '演示不计成绩' : '航行完成'}}</text><text class="hero small">{{mode === 'demo' ? '星空等你来' : title}}</text><text class="result-score">{{mode === 'demo' ? '45 秒星际之旅' : score + ' PTS'}}</text><text class="sub">穿越 {{hits}} / {{totalGates}} · 最佳连击 {{bestCombo}}</text></view>
   <view class="intro" style="display: {{phase === 'error' ? 'flex' : 'none'}}"><text class="hero small">画布暂不可用</text><text class="sub">{{message}}</text></view>
-  <view class="safety-note" style="display: {{phase === 'ready' && !settings ? 'flex' : 'none'}}"><text>请坐稳后体验，游戏时保持静坐。</text><text>请勿在驾驶或行走时游玩。</text></view>
+  <view class="briefing-panel" style="display: {{phase === 'briefing' ? 'flex' : 'none'}}"><text class="briefing-title">舰长，请就座</text><view class="terminal-copy"><text>{{terminalLines[0]}}</text><text>{{terminalLines[1]}}</text><text>{{terminalLines[2]}}</text><text>{{terminalLines[3]}}</text></view><text class="tiny">{{briefingSpeech}}</text></view>
   <view class="menu" style="display: {{phase !== 'flying' && phase !== 'calibrating' ? 'flex' : 'none'}}">
    <view class="menu-rail"><view class="menu-row" style="width: {{buttonRowWidth}}px; left: {{menuTrackLeft}}px"><card ink:for="{{menuButtons}}" ink:key="id" class="menu-card" style="width: {{buttonWidth}}px" data-id="{{item.id}}" bindtap="onAction"><view class="{{item.className}}"><text>{{item.label}}</text></view></card></view></view>
    <text class="menu-help">{{menuHelp}}</text>
@@ -108,6 +115,9 @@ export default {
  </view>
 </page>
 <style>
+.briefing-panel { position: absolute; top: 40px; left: 16px; width: 416px; height: 192px; display: flex; flex-direction: column; padding: 12px 16px; box-sizing: border-box; background-color: #000000; border: 1px solid #40FF5E; gap: 8px; }
+.briefing-title { font-size: 24px; line-height: 30px; font-weight: bold; }
+.terminal-copy { display: flex; flex-direction: column; font-size: 14px; line-height: 23px; height: 100px; color: #40FF5E; }
 page { background-color: #000000; color: #40FF5E; }
 .stage { width: 448px; height: 352px; position: relative; overflow: hidden; background-color: #000000; color: #40FF5E; }
 .scene { position: absolute; left: 0; top: 0; width: 448px; height: 352px; }
@@ -118,7 +128,7 @@ page { background-color: #000000; color: #40FF5E; }
 .intro { position: absolute; top: 66px; left: 32px; width: 384px; height: 172px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 9px; }
 .eyebrow { font-size: 10px; line-height: 16px; color: rgba(64,255,94,0.6); }.hero { font-size: 48px; line-height: 58px; font-weight: bold; }.small { font-size: 34px; line-height: 42px; }.sub { font-size: 17px; line-height: 24px; text-align: center; }
 .chips { display: flex; flex-direction: row; gap: 20px; font-size: 12px; line-height: 24px; color: rgba(64,255,94,0.6); }.result-score { font-size: 25px; line-height: 32px; font-weight: bold; }
-.home-intro { top: 42px; height: 150px; gap: 6px; }
+.home-intro { top: 66px; height: 172px; gap: 9px; }
 .safety-note { position: absolute; top: 197px; left: 16px; width: 416px; display: flex; flex-direction: column; align-items: center; font-size: 14px; line-height: 18px; color: #40FF5E; }
 .menu { position: absolute; left: 16px; top: 240px; width: 416px; display: flex; flex-direction: column; gap: 8px; }
 .menu-rail { position: relative; overflow: hidden; width: 416px; height: 64px; flex-shrink: 0; }.menu-row { position: absolute; top: 0; flex-shrink: 0; display: flex; flex-direction: row; gap: 10px; height: 64px; }

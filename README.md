@@ -53,11 +53,11 @@ npx aix preview dist/wormhole-roam.aix --html-out verification/aiui-reader.html
 - `preview/`：共享引擎的浏览器伴随展示。
 - `marketing/`：应用简介、路由意图、实际生成的Logo/海报和小红书文案，未自动发布。
 
-菜单复用本机aiui-production的`imu.js`与aiui-production-standard公共`MenuController`，游戏与菜单只允许一个传感器所有者。无记录列表、语音、相机、模型和导出，因此不套用业务记录模板。WXML使用`ink:`指令，无不支持的CSS动画。
+菜单复用本机aiui-production的`imu.js`与aiui-production-standard公共`MenuController`，游戏与菜单只允许一个传感器所有者。无记录列表、语音识别、相机、模型和导出（含启航TTS），因此不套用业务记录模板。WXML使用`ink:`指令，无不支持的CSS动画。
 
 ## 证据与边界
 
-见 `verification/REPORT.md` 和 `docs/DEVICE-ACCEPTANCE.md`。本地测试39项通过，静态检查和真实AIX打包通过；官方Ink 0.19.1 Reader渲染通过。具体浏览器与Reader验收结果记录在报告，不以合成输入外推真机效果。
+见 `verification/REPORT.md` 和 `docs/DEVICE-ACCEPTANCE.md`。本地测试43项通过，静态检查和真实AIX打包通过；官方Ink 0.19.1 Reader渲染通过。具体浏览器与Reader验收结果记录在报告，不以合成输入外推真机效果。
 
 这是**单画面的三维透视投影**：提供随头部方向变化的纵深感，不提供双目视差、6DoF、真实场景锚定或身体位移追踪。AIUI是运行平台，本游戏不调用AI模型；成绩由公开规则计算。
 
@@ -81,4 +81,8 @@ npx aix preview dist/wormhole-roam.aix --html-out verification/aiui-reader.html
 
 参赛PDF：`output/pdf/虫洞漫游_作品策划案_Spatial_Joy_2026.pdf`。
 
-首页常驻安全提示：请坐稳后体验，游戏时保持静坐。请勿在驾驶或行走时游玩。
+开始前飞船提示弹窗：每句以 > 开头，逐字显示，尝试TTS朗读；仅有「开启旅程」确认按钮，确认后才校准、飞行。文字提醒静坐与轻微转头，禁止驾车或行走时游玩；不适暂停。
+
+## 1.3.0：飞船启航提示
+
+开始、重玩、下一关均先进入提示弹窗，返回键可退出。提示等待期间没有飞行计时与游戏传感器；隐藏时清理逐字显示定时器，丢弃迟到回调。关闭音效时也不播TTS；TTS调用失败明确回退文字。AIUI未提供可靠的播报结束/取消API，不以估时判断播报结束，不依赖语音完成自动启航；宿主已经接收的播报可能持续到该短句结束。浏览器语音独立适配，效果不代替Rokid真机验收。

@@ -1,59 +1,63 @@
 
-> wormhole-roam-aiui@1.2.1 build
+> wormhole-roam-aiui@1.3.0 build
 > node scripts/package.mjs
 
-Static checks passed: 55
-(node:49051) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+Static checks passed: 61
+(node:70248) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
-✔ projection responds to yaw/pitch and depth, clips points behind camera (562.798875ms)
-✔ a round has 12 reachable gates, lasts 45 seconds and resets cleanly (68.71025ms)
-✔ pause freezes gameplay; misses are resolved once without ending the round (15.9665ms)
-✔ quaternion relative rotation wraps at ±180 and rejects invalid values (0.308667ms)
-✔ looking toward a gate steers toward it; looking straight retains lateral position (7.798208ms)
-✔ scene uses the AIUI 448 by 352 full-screen reference viewport (0.638834ms)
-✔ twenty levels shrink from 100% to 30%, increase displacement and actual speed (4.147917ms)
-✔ increased speed advances more gates in the same wall time, using the same world spacing (31.827125ms)
-✔ new default reverses former yaw, toggle restores former sign and recenter preserves choice (0.698125ms)
-✔ selected level survives pause/recalibration/replay, demo-to-keys and visibility round reset (49.754083ms)
-✔ a completed level waits for explicit next; final level has no next or wraparound (202.002709ms)
-✔ active rounds reject free selection and invalid level or seed inputs never enter a flight (0.966834ms)
-✔ 420 generated seeds remain playable in the actual flight engine (317.472333ms)
-✔ original experience plus twenty selectable level profiles with a full 100-to-30-percent size ramp (20.387959ms)
-✔ corresponding adjacent distances increase gradually across the twenty authored seeds (32.01425ms)
-✔ seeded generation is repeatable, variable, bounded and reachable over 420 routes (742.230416ms)
-✔ all twenty levels run 45 seconds and autopilot reaches every gate (185.6415ms)
-✔ free selection, replay, manual next and final level boundary work without lock or auto advance (1.727208ms)
-✔ fourth item moves the full rail left and settles within 180ms (3.326333ms)
-✔ returning to third restores the first item without relying on native scroll (6.71625ms)
-✔ fast direction changes animate from current position and hidden callbacks cannot update (0.315833ms)
-✔ duplicate target does not restart animation; reset clears offset and timer (0.332625ms)
-✔ actual Ink page uses one input owner, pauses and hides timers/sensors (39.497625ms)
-✔ actual Ink page never intercepts the host Backspace exit (3.042458ms)
-✔ renderer emits finite Canvas commands throughout a complete round and extreme head poses (346.259ms)
-✔ menu fourth item scrolls into view and third restores first viewport (0.928583ms)
-✔ actual Ink menu animates fourth item and cancels motion on hide (2.9175ms)
-✔ actual Ink free selection exposes all twenty levels and restores selected focus (2.790292ms)
-✔ host taps without dataset confirm the current menu focus without throwing (1.395458ms)
-✔ target dataset taps select the requested button rather than the current focus (0.914583ms)
-✔ native settings starts in the corrected yaw direction and toggles reverse/restore consistently (1.058917ms)
-✔ sensor detaches and ignores a late reading after stop (15.397959ms)
-✔ sensor rejects invalid quaternion and detects absence and stream loss (0.49625ms)
-✔ gyro fallback integrates finite short samples without integrating gaps (1.149ms)
-✔ controller calibrates, pauses on input loss and hides all resources (14.085209ms)
-✔ keyboard mode and demo finish, demo is explicitly marked, restart clears scores (34.045667ms)
-✔ slow rendering does not extend a 45-second flight (1.510917ms)
-✔ switching an automatic demonstration to keys starts a fresh manual round (1.985542ms)
-✔ resume preserves flight and paused wall time is excluded (0.433ms)
-ℹ tests 39
+✔ briefing waits for explicit launch without sensor or flight time (10.90675ms)
+✔ hidden or cancelled briefing cannot launch; next level can require briefing (0.257209ms)
+✔ terminal reveals character by character, completes and ignores stale callbacks (0.29875ms)
+✔ projection responds to yaw/pitch and depth, clips points behind camera (12.795083ms)
+✔ a round has 12 reachable gates, lasts 45 seconds and resets cleanly (4.273208ms)
+✔ pause freezes gameplay; misses are resolved once without ending the round (1.179334ms)
+✔ quaternion relative rotation wraps at ±180 and rejects invalid values (0.172792ms)
+✔ looking toward a gate steers toward it; looking straight retains lateral position (0.105333ms)
+✔ scene uses the AIUI 448 by 352 full-screen reference viewport (0.038166ms)
+✔ twenty levels shrink from 100% to 30%, increase displacement and actual speed (4.380333ms)
+✔ increased speed advances more gates in the same wall time, using the same world spacing (109.259625ms)
+✔ new default reverses former yaw, toggle restores former sign and recenter preserves choice (6.05825ms)
+✔ selected level survives pause/recalibration/replay, demo-to-keys and visibility round reset (28.315167ms)
+✔ a completed level waits for explicit next; final level has no next or wraparound (104.483875ms)
+✔ active rounds reject free selection and invalid level or seed inputs never enter a flight (0.63025ms)
+✔ 420 generated seeds remain playable in the actual flight engine (387.571208ms)
+✔ original experience plus twenty selectable level profiles with a full 100-to-30-percent size ramp (10.446417ms)
+✔ corresponding adjacent distances increase gradually across the twenty authored seeds (58.4925ms)
+✔ seeded generation is repeatable, variable, bounded and reachable over 420 routes (200.288708ms)
+✔ all twenty levels run 45 seconds and autopilot reaches every gate (252.010084ms)
+✔ free selection, replay, manual next and final level boundary work without lock or auto advance (7.266208ms)
+✔ fourth item moves the full rail left and settles within 180ms (2.2625ms)
+✔ returning to third restores the first item without relying on native scroll (0.342375ms)
+✔ fast direction changes animate from current position and hidden callbacks cannot update (1.059625ms)
+✔ duplicate target does not restart animation; reset clears offset and timer (0.144125ms)
+✔ actual Ink page uses one input owner, pauses and hides timers/sensors (337.667208ms)
+✔ actual Ink page never intercepts the host Backspace exit (31.711875ms)
+✔ renderer emits finite Canvas commands throughout a complete round and extreme head poses (553.164458ms)
+✔ menu fourth item scrolls into view and third restores first viewport (1.262458ms)
+✔ actual Ink menu animates fourth item and cancels motion on hide (2.062209ms)
+✔ actual Ink free selection exposes all twenty levels and restores selected focus (5.71125ms)
+✔ host taps without dataset confirm the current menu focus without throwing (1.174667ms)
+✔ target dataset taps select the requested button rather than the current focus (6.031666ms)
+✔ native settings starts in the corrected yaw direction and toggles reverse/restore consistently (1.513208ms)
+✔ Ink briefing cancels text callbacks and returns safely on Backspace (1.738375ms)
+✔ sensor detaches and ignores a late reading after stop (4.135667ms)
+✔ sensor rejects invalid quaternion and detects absence and stream loss (0.321209ms)
+✔ gyro fallback integrates finite short samples without integrating gaps (0.21525ms)
+✔ controller calibrates, pauses on input loss and hides all resources (35.490208ms)
+✔ keyboard mode and demo finish, demo is explicitly marked, restart clears scores (33.976958ms)
+✔ slow rendering does not extend a 45-second flight (24.665041ms)
+✔ switching an automatic demonstration to keys starts a fresh manual round (7.7825ms)
+✔ resume preserves flight and paused wall time is excluded (0.2385ms)
+ℹ tests 43
 ℹ suites 0
-ℹ pass 39
+ℹ pass 43
 ℹ fail 0
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 2270.20525
+ℹ duration_ms 1376.225083
 Scanning source files in app
-Collected 15 source files
+Collected 17 source files
 Loading WASM engine
 WASM engine ready
 Creating WASM source builder
@@ -68,7 +72,8 @@ Adding file: app.json
 Adding file: assets/finish.wav
 Adding file: assets/gate.wav
 Adding file: assets/logo.png
-Optimized lib/controller.js: 4.96 KB -> 4.39 KB (saved 579 bytes)
+Optimized lib/briefing.js: 723 bytes -> 673 bytes (saved 50 bytes)
+Optimized lib/controller.js: 5.21 KB -> 4.60 KB (saved 626 bytes)
 Optimized lib/flight.js: 3.03 KB -> 2.54 KB (saved 499 bytes)
 Optimized lib/imu.js: 4.44 KB -> 2.66 KB (saved 1.78 KB)
 Optimized lib/levels.js: 2.71 KB -> 1.93 KB (saved 800 bytes)
@@ -76,19 +81,21 @@ Optimized lib/menu-controller.js: 5.36 KB -> 3.70 KB (saved 1.66 KB)
 Optimized lib/menu-motion.js: 1.11 KB -> 820 bytes (saved 314 bytes)
 Optimized lib/pose.js: 3.11 KB -> 2.66 KB (saved 463 bytes)
 Optimized lib/renderer.js: 5.00 KB -> 3.55 KB (saved 1.45 KB)
+Optimized lib/tts.js: 2.31 KB -> 1004 bytes (saved 1.33 KB)
 Adding file: pages/index/index.ink
 Finalizing package archive
-Package created: dist/wormhole-roam.aix (874.56 KB)
+Package created: dist/wormhole-roam.aix (876.34 KB)
 Contents of dist/wormhole-roam.aix:
 AGENTS.md: 586 bytes (compressed: 483 bytes)
-META-INF/aix/manifest.json: 2.00 KB (compressed: 1.01 KB)
+META-INF/aix/manifest.json: 2.22 KB (compressed: 1.11 KB)
 VERSION: 36 bytes (compressed: 41 bytes)
 app.js: 43 bytes (compressed: 48 bytes)
-app.json: 1.21 KB (compressed: 847 bytes)
+app.json: 1.43 KB (compressed: 958 bytes)
 assets/finish.wav: 16.40 KB (compressed: 14.82 KB)
 assets/gate.wav: 8.22 KB (compressed: 7.47 KB)
 assets/logo.png: 833.78 KB (compressed: 833.78 KB)
-lib/controller.js: 4.39 KB (compressed: 1.59 KB)
+lib/briefing.js: 673 bytes (compressed: 443 bytes)
+lib/controller.js: 4.60 KB (compressed: 1.63 KB)
 lib/flight.js: 2.54 KB (compressed: 1.22 KB)
 lib/imu.js: 2.66 KB (compressed: 928 bytes)
 lib/levels.js: 1.93 KB (compressed: 1.14 KB)
@@ -96,5 +103,6 @@ lib/menu-controller.js: 3.70 KB (compressed: 1.44 KB)
 lib/menu-motion.js: 820 bytes (compressed: 392 bytes)
 lib/pose.js: 2.66 KB (compressed: 1.21 KB)
 lib/renderer.js: 3.55 KB (compressed: 1.71 KB)
-pages/index/index.ink: 15.30 KB (compressed: 4.73 KB)
-Real AIX artifact ready: 895546 bytes
+lib/tts.js: 1004 bytes (compressed: 495 bytes)
+pages/index/index.ink: 16.95 KB (compressed: 5.14 KB)
+Real AIX artifact ready: 897368 bytes

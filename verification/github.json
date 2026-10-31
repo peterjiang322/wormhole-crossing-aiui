@@ -5,7 +5,7 @@
   "branch": "main",
   "sourceBranch": "codex/initial-release",
   "verification": "Repository renamed in-place; private visibility retained. Final remote main SHA compared after release push.",
-  "artifactSha256": "3198b4a743ba7678d8f6615072cc6179662c41be3c91cb01c31f467c805cf9e4",
-  "version": "1.2.1",
+  "artifactSha256": "84321bfc99dc073a6fbc4d7e5848524c6f43c7bdfb5edb6cf0bc14369f0a007f",
+  "version": "1.3.0",
   "previousReleaseCommit": "d9d7a005b0dc9dc379ede120f9e9547e16320b51"
 }
