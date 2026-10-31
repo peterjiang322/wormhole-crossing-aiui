@@ -30,6 +30,7 @@ function syncMenu(){
 function renderLevelPreview(){const p=LEVELS[menu.focus];$('eyebrow').textContent='自由选关 · 体验关 + 20关';$('title').className='small';$('title').textContent=p?p.label:'返回首页';$('subtitle').textContent=p?p.summary:'保留当前关卡选择';$('chips').textContent='左右选择 · 点击确认 · 无需解锁';}
 function renderUI(){
  if(!game)return;syncMenu();const f=game.flight,phase=game.phase,active=phase==='flying';
+ $('safety-note').hidden=phase!=='ready'||settings;$('intro').classList.toggle('home-intro',phase==='ready'&&!settings);
  $('hud').hidden=!active;$('flight-footer').hidden=!active;$('intro').hidden=active;$('menu').hidden=active||phase==='calibrating';
  $('score').textContent=f.score;$('time').textContent=Math.ceil(45-f.elapsed)+'s';$('gates').textContent=f.hits+' / '+getLevel(game.levelId).gateCount;$('feedback').textContent=f.message;
  $('sensor').textContent=game.mode==='demo'?'自动演示 · 不计成绩':game.mode==='keys'?'方向键转向 · 空格回正':'鼠标模拟头动 · 空格回正';

@@ -89,7 +89,7 @@ export default {
    <text class="feedback">{{feedback}}</text><text class="tiny">{{sensor}}</text>
    <view class="mini-row"><card class="mini" bindtap="onRecenter"><text>重置朝向</text></card><card class="mini" bindtap="onPause"><text>暂停</text></card></view>
   </view>
-  <view class="intro" style="display: {{phase === 'ready' && !settings ? 'flex' : 'none'}}">
+  <view class="intro home-intro" style="display: {{phase === 'ready' && !settings ? 'flex' : 'none'}}">
    <text class="eyebrow">SPATIAL JOY · FLIGHT EXPERIENCE</text><text class="hero">虫洞漫游</text><text class="sub">{{levelLabel}} · 每关45秒</text>
    <view class="chips"><text>{{levelSummary}}</text></view>
   </view>
@@ -99,6 +99,7 @@ export default {
   <view class="intro" style="display: {{phase === 'paused' ? 'flex' : 'none'}}"><text class="eyebrow">FLIGHT PAUSED</text><text class="hero small">暂停航行</text><text class="sub">{{message}}</text><text class="tiny">继续时正视前方，重新校准朝向</text></view>
   <view class="intro result" style="display: {{phase === 'result' ? 'flex' : 'none'}}"><text class="eyebrow">{{levelLabel}} · {{mode === 'demo' ? '演示不计成绩' : '航行完成'}}</text><text class="hero small">{{mode === 'demo' ? '星空等你来' : title}}</text><text class="result-score">{{mode === 'demo' ? '45 秒星际之旅' : score + ' PTS'}}</text><text class="sub">穿越 {{hits}} / {{totalGates}} · 最佳连击 {{bestCombo}}</text></view>
   <view class="intro" style="display: {{phase === 'error' ? 'flex' : 'none'}}"><text class="hero small">画布暂不可用</text><text class="sub">{{message}}</text></view>
+  <view class="safety-note" style="display: {{phase === 'ready' && !settings ? 'flex' : 'none'}}"><text>请坐稳后体验，游戏时保持静坐。</text><text>请勿在驾驶或行走时游玩。</text></view>
   <view class="menu" style="display: {{phase !== 'flying' && phase !== 'calibrating' ? 'flex' : 'none'}}">
    <view class="menu-rail"><view class="menu-row" style="width: {{buttonRowWidth}}px; left: {{menuTrackLeft}}px"><card ink:for="{{menuButtons}}" ink:key="id" class="menu-card" style="width: {{buttonWidth}}px" data-id="{{item.id}}" bindtap="onAction"><view class="{{item.className}}"><text>{{item.label}}</text></view></card></view></view>
    <text class="menu-help">{{menuHelp}}</text>
@@ -117,6 +118,8 @@ page { background-color: #000000; color: #40FF5E; }
 .intro { position: absolute; top: 66px; left: 32px; width: 384px; height: 172px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 9px; }
 .eyebrow { font-size: 10px; line-height: 16px; color: rgba(64,255,94,0.6); }.hero { font-size: 48px; line-height: 58px; font-weight: bold; }.small { font-size: 34px; line-height: 42px; }.sub { font-size: 17px; line-height: 24px; text-align: center; }
 .chips { display: flex; flex-direction: row; gap: 20px; font-size: 12px; line-height: 24px; color: rgba(64,255,94,0.6); }.result-score { font-size: 25px; line-height: 32px; font-weight: bold; }
+.home-intro { top: 42px; height: 150px; gap: 6px; }
+.safety-note { position: absolute; top: 197px; left: 16px; width: 416px; display: flex; flex-direction: column; align-items: center; font-size: 14px; line-height: 18px; color: #40FF5E; }
 .menu { position: absolute; left: 16px; top: 240px; width: 416px; display: flex; flex-direction: column; gap: 8px; }
 .menu-rail { position: relative; overflow: hidden; width: 416px; height: 64px; flex-shrink: 0; }.menu-row { position: absolute; top: 0; flex-shrink: 0; display: flex; flex-direction: row; gap: 10px; height: 64px; }
 .menu-card { --card-padding: 0px; --card-border-width: 0px; border-width: 0px; height: 64px; min-height: 64px; margin: 0; flex-shrink: 0; box-sizing: border-box; }

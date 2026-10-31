@@ -80,3 +80,5 @@ npx aix preview dist/wormhole-roam.aix --html-out verification/aiui-reader.html
 作品正式名称为「虫洞漫游 / Wormhole Roam」，应用、预览、调用意图、安装包、海报与参赛策划案同步更新。历史验证截图及日志保留当时名称，当前画面见 `verification/rename-*.png`。玩法和难度参数保持1.2.0不变。
 
 参赛PDF：`output/pdf/虫洞漫游_作品策划案_Spatial_Joy_2026.pdf`。
+
+首页常驻安全提示：请坐稳后体验，游戏时保持静坐。请勿在驾驶或行走时游玩。
