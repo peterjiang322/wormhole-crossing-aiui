@@ -1,7 +1,7 @@
 Tool: built-in image_gen. Use case: logo-brand.
 Original prompt:
-Create a polished square app icon for a Rokid glasses short flight game named WORMHOLE ROAM. Only the symbol, no text. A sharp geometric eight-sided luminous green #40FF5E portal in perspective, three nested thin octagonal contours receding into a dark center, a tiny elegant forward arrow/spacecraft passing through the center, one restrained orbit line. Premium monochrome vector-like geometry, symmetrical balanced silhouette, crisp at 64px, deep pure black background, generous safe padding, no gradients to other hues, no letters, no fake branding, no watermark. This is an original new product logo.
+Create a polished square app icon for a Rokid glasses short flight game named WORMHOLE CROSSING. Only the symbol, no text. A sharp geometric eight-sided luminous green #40FF5E portal in perspective, three nested thin octagonal contours receding into a dark center, a tiny elegant forward arrow/spacecraft passing through the center, one restrained orbit line. Premium monochrome vector-like geometry, symmetrical balanced silhouette, crisp at 64px, deep pure black background, generous safe padding, no gradients to other hues, no letters, no fake branding, no watermark. This is an original new product logo.
 Source generated file: /Users/a1/.codex/generated_images/01a18293-dac0-7fb1-b124-bb45692d1b96/exec-42fada17-e277-4722-9a84-3db717bb1013.png
 Project delivery: assets/logo.png and app/assets/logo.png
 
-2026-10-30 rename: product now 虫洞漫游 / Wormhole Roam; existing approved text-free logo preserved unchanged.
+2026-10-30 rename: product now 穿越虫洞 / Wormhole Crossing; existing approved text-free logo preserved unchanged.

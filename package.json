@@ -1,6 +1,6 @@
 {
-  "name": "wormhole-roam-aiui",
-  "version": "1.4.0",
+  "name": "wormhole-crossing-aiui",
+  "version": "1.4.1",
   "private": true,
   "type": "module",
   "scripts": {

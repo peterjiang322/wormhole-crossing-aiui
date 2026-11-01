@@ -48,5 +48,5 @@ for i,n in enumerate(MELODY):
 events.append((16*480,b'\xff\x2f\x00'));events.sort(key=lambda x:x[0]);track=b'';last=0
 for at,msg in events:track+=vlq(at-last)+msg;last=at
 (OUT/'cosmic-theme.mid').write_bytes(b'MThd'+struct.pack('>IHHH',6,0,1,480)+b'MTrk'+struct.pack('>I',len(track))+track)
-(OUT/'manifest.json').write_text(json.dumps({'title':'虫洞回声 / Wormhole Echoes','composer':'Original procedural composition for Wormhole Roam','format':'11025 Hz, mono, unsigned 8-bit PCM WAV','bars':4,'beats':16,'tracks':manifest},ensure_ascii=False,indent=2)+'\n')
+(OUT/'manifest.json').write_text(json.dumps({'title':'虫洞回声 / Wormhole Echoes','composer':'Original procedural composition for Wormhole Crossing','format':'11025 Hz, mono, unsigned 8-bit PCM WAV','bars':4,'beats':16,'tracks':manifest},ensure_ascii=False,indent=2)+'\n')
 print(json.dumps(manifest,ensure_ascii=False,indent=2))

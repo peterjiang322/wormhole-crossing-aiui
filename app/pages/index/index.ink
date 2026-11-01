@@ -1,5 +1,5 @@
 <script def>
-{"navigationBarTitleText":"虫洞漫游","navigationStyle":"custom","description":"体验关加20个逐步进阶关卡，每关45秒，自由选关、下一关、头动透视和按键回退。","schema":{"data":{"type":"object","properties":{}}}}
+{"navigationBarTitleText":"穿越虫洞","navigationStyle":"custom","description":"体验关加20个逐步进阶关卡，每关45秒，自由选关、下一关、头动透视和按键回退。","schema":{"data":{"type":"object","properties":{}}}}
 </script>
 <script setup>
 import wx from 'wx';
@@ -90,7 +90,7 @@ export default {
 <page>
  <view class="stage">
   <canvas id="flight" width="448" height="352" class="scene"></canvas>
-  <view class="topline"><text>WORMHOLE / {{levelLabel}}</text><text>{{mode === 'demo' ? '自动演示' : '虫洞漫游'}}</text></view>
+  <view class="topline"><text>WORMHOLE / {{levelLabel}}</text><text>{{mode === 'demo' ? '自动演示' : '穿越虫洞'}}</text></view>
   <view class="hud" style="display: {{phase === 'flying' ? 'flex' : 'none'}}">
    <view class="stat"><text class="tiny">SCORE</text><text class="value">{{score}}</text></view>
    <view class="stat middle"><text class="tiny">TIME LEFT</text><text class="value">{{seconds}}s</text></view>
@@ -101,7 +101,7 @@ export default {
    <view class="mini-row"><card class="mini" bindtap="onRecenter"><text>重置朝向</text></card><card class="mini" bindtap="onPause"><text>暂停</text></card></view>
   </view>
   <view class="intro home-intro" style="display: {{phase === 'ready' && !settings ? 'flex' : 'none'}}">
-   <text class="eyebrow">SPATIAL JOY · FLIGHT EXPERIENCE</text><text class="hero">虫洞漫游</text><text class="sub">{{levelLabel}} · 每关45秒</text>
+   <text class="eyebrow">SPATIAL JOY · FLIGHT EXPERIENCE</text><text class="hero">穿越虫洞</text><text class="sub">{{levelLabel}} · 每关45秒</text>
    <view class="chips"><text>{{levelSummary}}</text></view>
   </view>
   <view class="intro" style="display: {{phase === 'levels' ? 'flex' : 'none'}}"><text class="eyebrow">自由选关 · 体验关 + 20关</text><text class="hero small">{{levelPreviewLabel}}</text><text class="sub">{{levelPreviewSummary}}</text><text class="tiny">左右选择 · 点头确认 · 无需解锁</text></view>

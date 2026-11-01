@@ -1,13 +1,13 @@
-# 虫洞漫游 · Wormhole Roam
+# 穿越虫洞 · Wormhole Crossing
 
 为2026年11月27—29日商场线下路演准备的Rokid AIUI短体验。**原体验关 + 20个进阶关卡，每关2秒校准 + 45秒飞行、12至21道星门**。原地轻轻转头，眼前的绿色线框隧道、远近星点与光门会改变透视；穿门触发连击和粒子反馈，最后5秒进入跃迁收尾。
 
-![实际浏览器共享引擎预览](verification/rename-preview-flight.png)
+![实际浏览器共享引擎预览](verification/crossing-preview-flight.png)
 
 ## 直接使用
 
-- **眼镜安装包：** `dist/wormhole-roam.aix`，要求 Ink `^0.19.1`。
-- **AIUI Studio源码导入：** `dist/wormhole-roam-source.zip`，解压后根目录是 `app.json`、`app.js`、`pages/` 与 `lib/`。
+- **眼镜安装包：** `dist/wormhole-crossing.aix`，要求 Ink `^0.19.1`。
+- **AIUI Studio源码导入：** `dist/wormhole-crossing-source.zip`，解压后根目录是 `app.json`、`app.js`、`pages/` 与 `lib/`。
 - **源码开发目录：** `app/`。
 - **官方Reader：** `verification/aiui-reader.html`。需通过HTTP打开，首次加载官方Ink运行时需联网。
 
@@ -42,7 +42,7 @@ npm run preview
 重新生成官方Reader：
 
 ```bash
-npx aix preview dist/wormhole-roam.aix --html-out verification/aiui-reader.html
+npx aix preview dist/wormhole-crossing.aix --html-out verification/aiui-reader.html
 ```
 
 ## 结构和实现
@@ -77,9 +77,9 @@ npx aix preview dist/wormhole-roam.aix --html-out verification/aiui-reader.html
 
 ## 1.2.1：名称统一
 
-作品正式名称为「虫洞漫游 / Wormhole Roam」，应用、预览、调用意图、安装包、海报与参赛策划案同步更新。历史验证截图及日志保留当时名称，当前画面见 `verification/rename-*.png`。玩法和难度参数保持1.2.0不变。
+作品正式名称为「穿越虫洞 / Wormhole Crossing」，应用、预览、调用意图、安装包、海报与参赛策划案同步更新。历史验证截图及日志保留当时名称，当前画面见 `verification/rename-*.png`。玩法和难度参数保持1.2.0不变。
 
-参赛PDF：`output/pdf/虫洞漫游_作品策划案_Spatial_Joy_2026.pdf`。
+参赛PDF：`output/pdf/穿越虫洞_作品策划案_Spatial_Joy_2026.pdf`。
 
 开始前飞船提示弹窗：每句以 > 开头，逐字显示，尝试TTS朗读；仅有「开启旅程」确认按钮，确认后才校准、飞行。文字提醒静坐与轻微转头，禁止驾车或行走时游玩；不适暂停。
 
@@ -94,3 +94,7 @@ npx aix preview dist/wormhole-roam.aix --html-out verification/aiui-reader.html
 ## 1.4.0：虫洞返航剧情
 
 体验关保留完整安全提示；进阶第1–20关分别提供地点、局势、任务及短安全提示，统一 > 逐字显示与TTS。自由选关按当前选中的章节讲述，不声称玩家已通关前置关。最终关结束呈现胜利返航故事结局并尝试TTS，保留真实命中/分数；演示单独标注返航演示完成，不作为玩家通关成绩。完整剧情见docs/STORY.md。
+
+## 1.4.1：正式名称穿越虫洞
+
+应用、预览、元数据、宣传海报、策划案、安装包及仓库统一使用「穿越虫洞 / Wormhole Crossing」。历史验证证据保留原名；当前截图为verification/crossing-*.png。
