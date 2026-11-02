@@ -1,4 +1,4 @@
-# 穿越虫洞 Implementation Plan
+# 虫洞穿越 Implementation Plan
 
 **Goal:** 构建单关45秒、头动透视的Rokid AIUI线下展示，并交付私有仓库。
 **Architecture:** 纯数学引擎与Canvas渲染共用于AIUI和浏览器；页面控制器管理权威状态，设备适配隔离传感器生命周期，公共菜单互斥。

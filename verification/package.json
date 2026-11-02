@@ -1,8 +1,8 @@
 {
   "tool": "@yodaos-pkg/aix-cli 0.10.1",
   "engine": "^0.19.1",
-  "file": "dist/wormhole-crossing.aix",
-  "bytes": 1195073,
-  "sha256": "5b4555f35ab5851d667cfcddabf039f688dcde424fcfc75c246bd81a9bdc7ec8",
+  "file": "dist/虫洞穿越.aix",
+  "bytes": 1196829,
+  "sha256": "462cef00cbb369681d38e39dc050ae3fb3070d30842df0025634b351c9445f57",
   "deviceTested": false
 }

@@ -12,14 +12,14 @@ from reportlab.lib.pagesizes import A4
 from PIL import Image
 
 ROOT=Path(__file__).resolve().parents[1]
-OUT=ROOT/'output/pdf/穿越虫洞_作品策划案_Spatial_Joy_2026.pdf'
+OUT=ROOT/'output/pdf/虫洞穿越_作品策划案_Spatial_Joy_2026.pdf'
 pdfmetrics.registerFont(TTFont('CN','/System/Library/Fonts/STHeiti Light.ttc',subfontIndex=0))
 pdfmetrics.registerFont(TTFont('CNB','/System/Library/Fonts/STHeiti Medium.ttc',subfontIndex=0))
 W,H=A4; M=43; CW=W-2*M
 INK=HexColor('#15261F'); MUTED=HexColor('#607369'); GREEN=HexColor('#09753B'); NEON=HexColor('#40FF5E'); LINE=HexColor('#DCE7DF'); PALE=HexColor('#EFF6F1'); DARK=HexColor('#06110B')
 c=canvas.Canvas(str(OUT),pagesize=A4,pageCompression=1)
-c.setTitle('穿越虫洞｜Spatial Joy 2026 全球开发大赛作品策划案')
-c.setAuthor('穿越虫洞项目组');c.setSubject('Rokid AI 赛道 AIUI 智能体；基于1.4.1实现状态的参赛作品策划案')
+c.setTitle('虫洞穿越｜Spatial Joy 2026 全球开发大赛作品策划案')
+c.setAuthor('虫洞穿越项目组');c.setSubject('Rokid AI 赛道 AIUI 智能体；基于1.4.2实现状态的参赛作品策划案')
 page=0
 
 def text(s,x,y,size=10,color=INK,bold=False):
@@ -37,10 +37,10 @@ def box(x,y,w,h,color=PALE,stroke=None,r=9):
 def base(kicker,title,sub):
  global page
  page+=1;c.setFillColor(white);c.rect(0,0,W,H,fill=1,stroke=0)
- text('穿越虫洞',M,26,9,GREEN,True);text('SPATIAL JOY 2026 / ROKID AIUI',W-255,27,8,MUTED)
+ text('虫洞穿越',M,26,9,GREEN,True);text('SPATIAL JOY 2026 / ROKID AIUI',W-255,27,8,MUTED)
  rule(48);text(kicker,M,66,9,GREEN,True);text(title,M,88,25,INK,True)
  para(sub,M,126,size=10.2,color=MUTED,leading=16)
- rule(H-39);text('作品策划案 · 2026.11.01 · 基于 1.4.1 实现状态',M,H-28,8,MUTED)
+ rule(H-39);text('作品策划案 · 2026.11.02 · 基于 1.4.2 实现状态',M,H-28,8,MUTED)
  text(f'{page:02d} / 09',W-M-37,H-28,8,MUTED)
 
 def section(title,s,y):
@@ -67,7 +67,7 @@ for i in range(26):
  c.setFillColor(Color(.25,1,.37,alpha=.14+(i%3)*.08));c.circle(x,y,.7+(i%2)*.5,fill=1,stroke=0)
 text('SPATIAL JOY 2026',M,43,11,NEON,True)
 text('全球开发大赛',M,65,12,HexColor('#BFD3C5'))
-text('穿越虫洞',M,117,49,white,True)
+text('虫洞穿越',M,117,49,white,True)
 text('转动头部，穿越星海。',M+2,184,17,NEON)
 text('作品策划案',M,228,19,white)
 para('Rokid AI 赛道 AIUI 智能体',M,261,size=12,color=HexColor('#C6D8CB'),leading=19)
@@ -85,13 +85,13 @@ text('1 + 20 关',M,464,23,NEON,True);text('体验关与进阶挑战',M,499,10,H
 text('头动操控',M,543,23,NEON,True);text('离线运行 · 自由选关',M,578,10,HexColor('#BFD3C5'))
 c.setStrokeColor(HexColor('#21442D'));c.line(M,157,W-M,157)
 para('面向 Rokid AI 眼镜的短时飞行闯关体验。以头部姿态驱动航向与透视变化，在绿色线框宇宙中连续穿越光门。',M,708,CW,11,19,HexColor('#D2DFD6'))
-text('参赛名称：穿越虫洞  /  实现基线：1.4.1  /  2026.11.01',M,794,8.5,HexColor('#86A48E'))
+text('参赛名称：虫洞穿越  /  实现基线：1.4.2  /  2026.11.02',M,794,8.5,HexColor('#86A48E'))
 end()
 
 # 02 / Overview
 base('01 / PROJECT OVERVIEW','作品概述','一句话定位：戴上眼镜，轻轻转头，用 45 秒完成一次虫洞飞行挑战。')
 y=174
-y=section('项目摘要','「穿越虫洞」是一款运行于 Rokid AIUI 的头动飞行小游戏。玩家在原地通过小幅左右转头、抬头与低头控制航向，穿过前方不断接近的光门；远近星点、线框隧道与透视变化共同构成具有纵深感的虚拟太空。每关先呈现逐字剧情与TTS提示，确认后校准约2秒、飞行45秒；背景音乐随难度加快，最终关呈现返航结局。',y)
+y=section('项目摘要','「虫洞穿越」是一款运行于 Rokid AIUI 的头动飞行小游戏。玩家在原地通过小幅左右转头、抬头与低头控制航向，穿过前方不断接近的光门；远近星点、线框隧道与透视变化共同构成具有纵深感的虚拟太空。每关先呈现逐字剧情与TTS提示，确认后校准约2秒、飞行45秒；背景音乐随难度加快，最终关呈现返航结局。',y)
 y=section('目标用户与使用场景','面向商场路演观众、科技展参观者及第一次接触 AI 眼镜的用户。计划于 2026 年 11 月 27 日至 29 日的商场线下路演展示，也适合开发者演示、零售体验与短时休闲场景。',y)
 # 3 objective cards
 cards=[('容易上手','把“看向光门”转化为操控动作，让第一次佩戴的观众快速理解。'),('立即有感','头部运动与画面变化形成直接反馈，让纵深、速度与穿越感可感知。'),('适合轮换','固定时长、无需账号、自由选关与自动演示，方便展台连续接待。')]
@@ -100,7 +100,7 @@ for i,(a,b) in enumerate(cards):
  x=M+i*(cw+11);box(x,y,cw,132);text(a,x+12,y+13,12,GREEN,True);para(b,x+12,y+40,cw-24,9.7,16)
 y+=157
 y=section('参赛价值与 AIUI 定位','作品探索 AI 眼镜上的轻量娱乐交互：将设备姿态输入、前台菜单与游戏反馈组成一条完整体验链。当前版本采用本地规则生成路线和规则计分，没有调用大模型、图像识别或语音识别；“AIUI 智能体”指作品的运行与调起形态，智能教练等能力作为后续拓展方向。',y)
-callout('本次申报口径','参赛作品、应用界面、调用意图、安装包、预览与宣传素材统一使用「穿越虫洞」；英文名为 Wormhole Crossing。当前版本 1.4.1，已包含逐关剧情、启航确认、TTS及四档节奏的宇宙背景音。',y,81)
+callout('本次申报口径','参赛作品、应用界面、调用意图、安装包、预览与宣传素材统一使用「虫洞穿越」；英文名为 Wormhole Crossing。当前版本 1.4.2，已包含逐关剧情、启航确认、TTS及四档节奏的宇宙背景音。',y,81)
 end()
 
 # 03 / Journey
@@ -149,7 +149,7 @@ callout('能力边界','当前是单画面的三维透视表现。未实现双�
 end()
 
 # 06 / Real screenshots
-base('05 / CURRENT BUILD','实际运行画面','以下为更名后 1.4.1 版本的真实运行截图，分别来自共享引擎预览与官方 Reader。')
+base('05 / CURRENT BUILD','实际运行画面','以下为更名后 1.4.2 版本的真实运行截图，分别来自共享引擎预览与官方 Reader。')
 text('A  飞行画面：浏览器伴随预览，共享游戏引擎',M,170,11,GREEN,True)
 image_region(ROOT/'verification/crossing-preview-flight.png',M,196,CW,285,region=(598,163,1381,782))
 para('绿色线框隧道、光门、剩余时间、命中数量与连击反馈。此图采用自动演示输入，不作为真实玩家成绩或眼镜实机截图。',M,488,size=9.1,leading=15,color=MUTED)
@@ -190,12 +190,12 @@ end()
 # 09 / Roadmap
 base('08 / ROADMAP & SUBMISSION','后续迭代与参赛交付','保留已经成立的短体验链，逐步拓展内容与可重复游玩的空间。')
 y=174
-road=[('近期：参赛与路演定版','应用、安装包和展示物料已统一使用「穿越虫洞」；接下来针对目标 Rokid 设备做方向、流畅度、光照与舒适度验收，完成现场工作人员说明卡与部署检查。'),('下一步：开放规则生成','基于现有关卡生成器，增加自定义难度入口，允许调整光门大小、位置差、速度与种子；增加可复现的随机挑战。所有参数仍受边界与可达性约束。'),('探索：智能体验辅助','评估引入局后智能教练，以命中、漏门和操作统计生成简短建议；若接入模型，应明确新增依赖、权限与等待反馈。语音启动、无限模式、排行榜等按验证结果另行规划。')]
+road=[('近期：参赛与路演定版','应用、安装包和展示物料已统一使用「虫洞穿越」；接下来针对目标 Rokid 设备做方向、流畅度、光照与舒适度验收，完成现场工作人员说明卡与部署检查。'),('下一步：开放规则生成','基于现有关卡生成器，增加自定义难度入口，允许调整光门大小、位置差、速度与种子；增加可复现的随机挑战。所有参数仍受边界与可达性约束。'),('探索：智能体验辅助','评估引入局后智能教练，以命中、漏门和操作统计生成简短建议；若接入模型，应明确新增依赖、权限与等待反馈。语音启动、无限模式、排行榜等按验证结果另行规划。')]
 for a,b in road:y=section(a,b,y)
 callout('作品的核心亮点','头动直接参与游戏；45 秒形成完整体验；单绿色线框呈现空间纵深；从体验关到 20 关逐步提高挑战；离线运行、按键回退与生命周期管理适合真实展台轮换。',y,85);y+=109
 text('本次交付与工程依据',M,y,13,GREEN,True);y+=25
 y=para('本文件：参赛作品策划案 PDF。<br/>现有工程：原生 AIUI 页面及模块、AIX 安装包、源码 ZIP、浏览器伴随预览、官方 Reader。<br/>事实核对：README、关卡参数表、验证报告、测试与静态检查记录。<br/>截图依据：工程中保留的真实运行截图；未将概念图作为实现证据。',M,y,size=10,leading=19)+22
-para('本策划案使用报名者提供的赛事名称与赛道表述编制，未引用未提供的评分细则。功能与验证状态截至 2026 年 11 月 1 日；规划项不作为已交付能力。',M,y,size=9,leading=15,color=MUTED)
+para('本策划案使用报名者提供的赛事名称与赛道表述编制，未引用未提供的评分细则。功能与验证状态截至 2026 年 11 月 2 日；规划项不作为已交付能力。',M,y,size=9,leading=15,color=MUTED)
 end();c.save()
 print(OUT)
 print('pages:',page,'bytes:',OUT.stat().st_size)

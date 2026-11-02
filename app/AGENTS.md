@@ -1,4 +1,4 @@
-# 穿越虫洞 / Wormhole Crossing
+# 虫洞穿越 / Wormhole Crossing
 
 Rokid AIUI 展台小游戏。使用 aiui-dev、aiui-production 和 IMU 菜单规范。
 - 单绿色 #40FF5E、448×352、ink:控制属性、setData异步。
