@@ -1,0 +1,138 @@
+
+> wormhole-crossing-aiui@1.4.3 build
+> node scripts/package.mjs
+
+Static checks passed: 67
+(node:84124) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ briefing waits for explicit launch without sensor or flight time (1.652833ms)
+✔ hidden or cancelled briefing cannot launch; next level can require briefing (0.174458ms)
+✔ terminal reveals character by character, completes and ignores stale callbacks (0.166041ms)
+✔ projection responds to yaw/pitch and depth, clips points behind camera (3.651417ms)
+✔ a round has 12 reachable gates, lasts 45 seconds and resets cleanly (2.771458ms)
+✔ pause freezes gameplay; misses are resolved once without ending the round (0.680292ms)
+✔ quaternion relative rotation wraps at ±180 and rejects invalid values (0.198542ms)
+✔ looking toward a gate steers toward it; looking straight retains lateral position (0.249083ms)
+✔ scene uses the AIUI 448 by 352 full-screen reference viewport (0.165ms)
+✔ twenty levels shrink from 100% to 30%, increase displacement and actual speed (0.572458ms)
+✔ increased speed advances more gates in the same wall time, using the same world spacing (4.707ms)
+✔ new default reverses former yaw, toggle restores former sign and recenter preserves choice (0.110417ms)
+✔ selected level survives pause/recalibration/replay, demo-to-keys and visibility round reset (2.668542ms)
+✔ a completed level waits for explicit next; final level has no next or wraparound (15.265584ms)
+✔ active rounds reject free selection and invalid level or seed inputs never enter a flight (0.94ms)
+✔ 420 generated seeds remain playable in the actual flight engine (49.584709ms)
+✔ original experience plus twenty selectable level profiles with a full 100-to-30-percent size ramp (3.629875ms)
+✔ corresponding adjacent distances increase gradually across the twenty authored seeds (1.19025ms)
+✔ seeded generation is repeatable, variable, bounded and reachable over 420 routes (11.607583ms)
+✔ all twenty levels run 45 seconds and autopilot reaches every gate (15.675333ms)
+✔ free selection, replay, manual next and final level boundary work without lock or auto advance (0.5445ms)
+✔ a burst of swipe release events advances once so the second item remains selectable (1.512ms)
+✔ a duplicate release does not postpone the next swipe and reverse selection restores item two (0.218459ms)
+✔ confirm is immediate after a swipe; repeat direction events and host Backspace remain safe (1.391584ms)
+✔ hand swipe briefly owns selection without changing the IMU algorithm or its normal pacing (0.719833ms)
+✔ separate swipes retain fourth-to-third viewport recovery and wrap-around (0.378291ms)
+✔ fourth item moves the full rail left and settles within 180ms (1.083ms)
+✔ returning to third restores the first item without relying on native scroll (0.081ms)
+✔ fast direction changes animate from current position and hidden callbacks cannot update (0.169791ms)
+✔ duplicate target does not restart animation; reset clears offset and timer (0.065417ms)
+✔ space WAV loops use compact valid 8bit mono PCM with quiet seams and ascending tempo (2.395625ms)
+✔ music tiers and lifecycle clean repeat timers, ignore late callbacks, do not repeat on HUD updates (0.558292ms)
+✔ missing or rejected audio has a visible fallback and no retry storm (0.18725ms)
+✔ actual Ink page uses one input owner, pauses and hides timers/sensors (12.7615ms)
+✔ actual Ink page never intercepts the host Backspace exit (2.738291ms)
+✔ renderer emits finite Canvas commands throughout a complete round and extreme head poses (66.640334ms)
+✔ menu fourth item scrolls into view and third restores first viewport (0.344125ms)
+✔ actual Ink menu animates fourth item and cancels motion on hide (0.95675ms)
+✔ actual Ink free selection exposes all twenty levels and restores selected focus (0.42875ms)
+✔ host taps without dataset confirm the current menu focus without throwing (0.290542ms)
+✔ target dataset taps select the requested button rather than the current focus (0.265792ms)
+✔ native settings starts in the corrected yaw direction and toggles reverse/restore consistently (0.253084ms)
+✔ Ink briefing cancels text callbacks and returns safely on Backspace (0.325958ms)
+✔ native page keeps item two selected through duplicate physical swipe releases (0.262125ms)
+✔ sensor detaches and ignores a late reading after stop (0.8285ms)
+✔ sensor rejects invalid quaternion and detects absence and stream loss (0.108542ms)
+✔ gyro fallback integrates finite short samples without integrating gaps (0.09075ms)
+✔ controller calibrates, pauses on input loss and hides all resources (0.67225ms)
+✔ keyboard mode and demo finish, demo is explicitly marked, restart clears scores (1.873042ms)
+✔ slow rendering does not extend a 45-second flight (1.37375ms)
+✔ switching an automatic demonstration to keys starts a fresh manual round (0.84925ms)
+✔ resume preserves flight and paused wall time is excluded (0.147041ms)
+✔ experience has full safety and twenty independent short chapters form return journey (0.5575ms)
+ℹ tests 53
+ℹ suites 0
+ℹ pass 53
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 233.357625
+Scanning source files in app
+Collected 27 source files
+Loading WASM engine
+WASM engine ready
+Creating WASM source builder
+Transferring files to WASM incrementally
+Finished transferring files to WASM
+Collecting source inputs
+Resolving engine range
+Preparing files for packaging
+Adding file: .DS_Store
+Adding file: AGENTS.md
+Optimized app.js: 45 bytes -> 43 bytes (saved 2 bytes)
+Adding file: app.json
+Adding file: assets/finish.wav
+Adding file: assets/gate.wav
+Adding file: assets/logo.png
+Adding file: assets/music/cosmic-104.wav
+Adding file: assets/music/cosmic-116.wav
+Adding file: assets/music/cosmic-80.wav
+Adding file: assets/music/cosmic-92.wav
+Adding file: assets/music/cosmic-theme.mid
+Adding file: assets/music/manifest.json
+Optimized lib/briefing.js: 723 bytes -> 664 bytes (saved 59 bytes)
+Optimized lib/controller.js: 5.21 KB -> 4.60 KB (saved 626 bytes)
+Optimized lib/flight.js: 3.03 KB -> 2.54 KB (saved 499 bytes)
+Optimized lib/imu.js: 4.44 KB -> 2.66 KB (saved 1.78 KB)
+Optimized lib/levels.js: 2.71 KB -> 1.93 KB (saved 800 bytes)
+Optimized lib/menu-controller.js: 5.83 KB -> 3.93 KB (saved 1.90 KB)
+Optimized lib/menu-motion.js: 1.11 KB -> 820 bytes (saved 314 bytes)
+Optimized lib/music.js: 1.53 KB -> 1.23 KB (saved 310 bytes)
+Optimized lib/pose.js: 3.11 KB -> 2.66 KB (saved 463 bytes)
+Optimized lib/renderer.js: 5.00 KB -> 3.55 KB (saved 1.45 KB)
+Optimized lib/story.js: 4.01 KB -> 3.81 KB (saved 210 bytes)
+Optimized lib/tts.js: 2.31 KB -> 1004 bytes (saved 1.33 KB)
+Adding file: pages/.DS_Store
+Adding file: pages/index/index.ink
+Finalizing package archive
+Package created: dist/虫洞穿越.aix (1.14 MB)
+Contents of dist/虫洞穿越.aix:
+.DS_Store: 6.00 KB (compressed: 757 bytes)
+AGENTS.md: 590 bytes (compressed: 486 bytes)
+META-INF/aix/manifest.json: 3.41 KB (compressed: 1.62 KB)
+VERSION: 36 bytes (compressed: 41 bytes)
+app.js: 43 bytes (compressed: 48 bytes)
+app.json: 1.39 KB (compressed: 927 bytes)
+assets/finish.wav: 16.40 KB (compressed: 14.82 KB)
+assets/gate.wav: 8.22 KB (compressed: 7.47 KB)
+assets/logo.png: 833.78 KB (compressed: 833.78 KB)
+assets/music/cosmic-104.wav: 99.43 KB (compressed: 65.84 KB)
+assets/music/cosmic-116.wav: 89.15 KB (compressed: 59.77 KB)
+assets/music/cosmic-80.wav: 129.24 KB (compressed: 85.63 KB)
+assets/music/cosmic-92.wav: 112.39 KB (compressed: 75.15 KB)
+assets/music/cosmic-theme.mid: 148 bytes (compressed: 99 bytes)
+assets/music/manifest.json: 875 bytes (compressed: 389 bytes)
+lib/briefing.js: 664 bytes (compressed: 443 bytes)
+lib/controller.js: 4.60 KB (compressed: 1.63 KB)
+lib/flight.js: 2.54 KB (compressed: 1.22 KB)
+lib/imu.js: 2.66 KB (compressed: 928 bytes)
+lib/levels.js: 1.93 KB (compressed: 1.14 KB)
+lib/menu-controller.js: 3.93 KB (compressed: 1.50 KB)
+lib/menu-motion.js: 820 bytes (compressed: 392 bytes)
+lib/music.js: 1.23 KB (compressed: 616 bytes)
+lib/pose.js: 2.66 KB (compressed: 1.21 KB)
+lib/renderer.js: 3.55 KB (compressed: 1.71 KB)
+lib/story.js: 3.81 KB (compressed: 1.66 KB)
+lib/tts.js: 1004 bytes (compressed: 495 bytes)
+pages/.DS_Store: 6.00 KB (compressed: 693 bytes)
+pages/index/index.ink: 18.16 KB (compressed: 5.42 KB)
+Real AIX artifact ready: 1196889 bytes

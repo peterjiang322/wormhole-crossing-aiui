@@ -1,0 +1,25 @@
+{
+  "version": "1.4.3",
+  "evidence": "L1 synthetic input / L2 browser and Reader; not physical Rokid touch",
+  "keyCooldownMs": 280,
+  "tests": 53,
+  "staticChecks": 67,
+  "browser": {
+    "syntheticInput": true,
+    "selectedSequence": [
+      "开始飞行",
+      "观赏演示",
+      "自由选关",
+      "设置",
+      "自由选关"
+    ],
+    "finalTrackLeft": "0px"
+  },
+  "reader": {
+    "runtime": "0.19.1",
+    "selectedSecondItemScreenshot": "menu-swipe-reader-second.png"
+  },
+  "codeReview": "Independent read-only review: no blocking issue",
+  "deviceTested": false,
+  "easterEggsImplemented": false
+}

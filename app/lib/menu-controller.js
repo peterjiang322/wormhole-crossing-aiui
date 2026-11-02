@@ -9,13 +9,18 @@ export function horizontalLayout(count, width = 416) {
 // actions: [{ id, label, run() }]; list entries use the same shape.
 // Controller state is authoritative; never read async setData patches back.
 export class MenuController {
-  constructor({ Sensor, emit, report = () => {}, now, navigationCooldownMs = 0 }) {
+  constructor({ Sensor, emit, report = () => {}, now, navigationCooldownMs = 0, keyNavigationCooldownMs = 280 }) {
     this.emit = emit; this.report = report; this.foreground = false;
     this.now = now || (() => Date.now()); this.confirmUntil = 0;
     this.navigationCooldownMs = Math.max(0, navigationCooldownMs); this.lastMoveAt = -Infinity; this.recordStep = 36;
+    // A temple swipe can arrive as several release events (including direction
+    // aliases). Deduplicate manual selection only; preserve normal IMU pacing.
+    this.keyNavigationCooldownMs = Math.max(0, keyNavigationCooldownMs); this.keyNavigationUntil = -Infinity;
     this.blocked = false; this.pending = false; this.focus = 0; this.epoch = 0;
     this.buttons = []; this.records = []; this.width = 416; this.menuScrollLeft = 0;
-    this.imu = new MenuIMU(Sensor, delta => this.move(delta), () => this.render(), this.now, () => this.confirm());
+    this.imu = new MenuIMU(Sensor, delta => {
+      if (this.now() >= this.keyNavigationUntil) this.move(delta);
+    }, () => this.render(), this.now, () => this.confirm());
   }
   configure({ buttons, records = [], width = 416, recordStep = 36 }) {
     this.imu.stop(); this.epoch++; this.pending = false;
@@ -71,7 +76,10 @@ export class MenuController {
     // The owning page may implement an internal back action separately.
     if (event.code === 'Backspace' || !this.enabled()) return;
     if (['ArrowLeft', 'ArrowUp', 'ArrowRight', 'ArrowDown'].includes(event.code)) {
-      event.preventDefault(); if (event.repeat) return; this.imu.reset();
+      event.preventDefault();
+      if (event.repeat || this.now() < this.keyNavigationUntil) return;
+      this.keyNavigationUntil = this.now() + this.keyNavigationCooldownMs;
+      this.imu.reset();
       this.move(event.code === 'ArrowLeft' || event.code === 'ArrowUp' ? -1 : 1);
     } else if (event.code === 'Enter') {
       event.preventDefault(); this.imu.reset(); return this.confirm();

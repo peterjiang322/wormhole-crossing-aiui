@@ -23,7 +23,7 @@ export default {
   this.input=new PoseInput({Orientation:typeof AbsoluteOrientationSensor==='undefined'?null:AbsoluteOrientationSensor,Gyro:typeof Gyroscope==='undefined'?null:Gyroscope,report:message=>{if(this._visible)this.setData({errorText:message});}});
   this.game=new Controller({input:this.input,emit:patch=>{if(!this._visible)return;this.setData(patch);this.music.update(patch.phase,this.game.levelId,this._soundOn);this.syncEnding(patch.phase);this.syncMenu(patch.phase);},sound:event=>this.playSound(event)});
   this.menuMotion=new MenuMotion({emit:patch=>{if(this._visible)this.setData(patch);}});
-  this.menu=new MenuController({Sensor:typeof Gyroscope==='undefined'?null:Gyroscope,emit:patch=>{if(this._visible){this.setData(patch);this.menuMotion.to(patch.menuScrollLeft);if(this.game.phase==='levels'){const level=LEVELS[this.menu.focus];this.setData({levelPreviewLabel:level?level.label:'返回首页',levelPreviewSummary:level?level.summary:'保留当前关卡选择'});}}},report:error=>this.setData({errorText:error.message||String(error)})});
+  this.menu=new MenuController({Sensor:typeof Gyroscope==='undefined'?null:Gyroscope,now:()=>Date.now(),emit:patch=>{if(this._visible){this.setData(patch);this.menuMotion.to(patch.menuScrollLeft);if(this.game.phase==='levels'){const level=LEVELS[this.menu.focus];this.setData({levelPreviewLabel:level?level.label:'返回首页',levelPreviewSummary:level?level.summary:'保留当前关卡选择'});}}},report:error=>this.setData({errorText:error.message||String(error)})});
  },
  onShow(){this._visible=true;this._generation++;this._menuPhase='';this._settings=false;this.setData({settings:false,errorText:''});this.game.show();if(this._ready)this.beginRender();},
  onReady(){this._ready=true;if(this._visible)this.beginRender();},

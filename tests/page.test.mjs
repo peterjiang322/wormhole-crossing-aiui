@@ -59,3 +59,12 @@ test('native settings starts in the corrected yaw direction and toggles reverse/
 });
 
 test('Ink briefing cancels text callbacks and returns safely on Backspace',async()=>{const h=pageHarness(),p=h.page;p.onShow();await p.menu.tap('start');const callbacks=[...h.timers.values()];assert.equal(p.game.phase,'briefing');let prevented=false;p.onKeyUp({code:'Backspace',preventDefault(){prevented=true;}});assert.equal(prevented,true);assert.equal(p.game.phase,'ready');p.onHide();for(const fn of callbacks)fn();assert.equal(h.timers.size,0);assert.equal(h.active.size,0);});
+
+test('native page keeps item two selected through duplicate physical swipe releases',async()=>{
+ const h=pageHarness(),p=h.page;p.onShow();
+ const key=code=>p.onKeyUp({code,preventDefault(){}});
+ key('ArrowDown');assert.equal(p.menu.focus,1);
+ h.setNow(45);key('ArrowDown');h.setNow(110);key('ArrowRight');assert.equal(p.menu.focus,1);
+ await p.onAction({});assert.equal(p.game.mode,'demo');assert.equal(p.game.phase,'briefing','second item stays confirmable');
+ p.onHide();assert.equal(h.active.size,0);assert.equal(h.timers.size,0);
+});
