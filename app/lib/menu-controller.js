@@ -9,7 +9,7 @@ export function horizontalLayout(count, width = 416) {
 // actions: [{ id, label, run() }]; list entries use the same shape.
 // Controller state is authoritative; never read async setData patches back.
 export class MenuController {
-  constructor({ Sensor, emit, report = () => {}, now, navigationCooldownMs = 0, keyNavigationCooldownMs = 280 }) {
+  constructor({ Sensor, emit, report = () => {}, now, navigationCooldownMs = 0, keyNavigationCooldownMs = 500 }) {
     this.emit = emit; this.report = report; this.foreground = false;
     this.now = now || (() => Date.now()); this.confirmUntil = 0;
     this.navigationCooldownMs = Math.max(0, navigationCooldownMs); this.lastMoveAt = -Infinity; this.recordStep = 36;
@@ -77,8 +77,12 @@ export class MenuController {
     if (event.code === 'Backspace' || !this.enabled()) return;
     if (['ArrowLeft', 'ArrowUp', 'ArrowRight', 'ArrowDown'].includes(event.code)) {
       event.preventDefault();
-      if (event.repeat || this.now() < this.keyNavigationUntil) return;
-      this.keyNavigationUntil = this.now() + this.keyNavigationCooldownMs;
+      const time = this.now();
+      const duplicate = event.repeat || time < this.keyNavigationUntil;
+      // Wait for a quiet gap after the LAST release. A fixed interval after the
+      // first event lets a long swipe's tail through and skips item two again.
+      this.keyNavigationUntil = time + this.keyNavigationCooldownMs;
+      if (duplicate) return;
       this.imu.reset();
       this.move(event.code === 'ArrowLeft' || event.code === 'ArrowUp' ? -1 : 1);
     } else if (event.code === 'Enter') {

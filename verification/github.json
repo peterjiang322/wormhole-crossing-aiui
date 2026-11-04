@@ -5,7 +5,7 @@
   "branch": "main",
   "sourceBranch": "codex/initial-release",
   "verification": "Existing private repository retained; normal main push followed by remote/local SHA comparison.",
-  "artifactSha256": "b943d9336c0920c3ae7aab0e7fc1b716fcd8835ff701099717210471aa7b6b6d",
-  "version": "1.4.3",
+  "artifactSha256": "8708c406cc06bb7c1fc992924dd0788aad67d70f30f246487581a812ba931b72",
+  "version": "1.4.4",
   "previousReleaseCommit": "86a493e4e9f0a47595f7a4d7c3a79f76bee5d3d7"
 }

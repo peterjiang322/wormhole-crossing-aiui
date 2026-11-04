@@ -1,6 +1,6 @@
 {
   "name": "虫洞穿越",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "description": "体验关加20关，每关45秒；圈径100%逐关降至30%，位移和速度递增，左右默认方向已修正。",
   "pages": [
     "pages/index/index"

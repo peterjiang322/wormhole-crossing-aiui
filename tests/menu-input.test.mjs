@@ -16,13 +16,14 @@ test('a burst of swipe release events advances once so the second item remains s
  h.setNow(1080);h.key('ArrowRight');
  h.setNow(1250);h.key('ArrowDown');
  assert.equal(h.menu.focus,1,'duplicate releases must not skip the second item');
- h.setNow(1280);h.key('ArrowDown');assert.equal(h.menu.focus,2,'the next deliberate swipe moves one more item');
+ h.setNow(1750);h.key('ArrowDown');assert.equal(h.menu.focus,2,'the next deliberate swipe moves one more item');
 });
 
-test('a duplicate release does not postpone the next swipe and reverse selection restores item two',()=>{
- const h=fixture();h.key('ArrowRight');h.setNow(1279);h.key('ArrowRight');assert.equal(h.menu.focus,1);
- h.setNow(1280);h.key('ArrowRight');assert.equal(h.menu.focus,2);
- h.setNow(1560);h.key('ArrowLeft');assert.equal(h.menu.focus,1);
+test('a long swipe burst remains one move until releases have been quiet for 500ms',()=>{
+ const h=fixture();h.key('ArrowRight');
+ for(const t of [1310,1620,1930]){h.setNow(t);h.key('ArrowDown');assert.equal(h.menu.focus,1);}
+ h.setNow(2430);h.key('ArrowRight');assert.equal(h.menu.focus,2);
+ h.setNow(2930);h.key('ArrowLeft');assert.equal(h.menu.focus,1);
 });
 
 test('confirm is immediate after a swipe; repeat direction events and host Backspace remain safe',async()=>{
@@ -34,15 +35,15 @@ test('confirm is immediate after a swipe; repeat direction events and host Backs
 test('hand swipe briefly owns selection without changing the IMU algorithm or its normal pacing',()=>{
  const h=fixture();h.key('ArrowDown');
  h.setNow(1100);h.menu.imu.move(1);assert.equal(h.menu.focus,1,'incidental head movement must not add another step');
- h.setNow(1280);h.menu.imu.move(1);assert.equal(h.menu.focus,2);
- h.setNow(1320);h.menu.imu.move(1);assert.equal(h.menu.focus,3,'normal IMU selection is not given a key debounce');
+ h.setNow(1500);h.menu.imu.move(1);assert.equal(h.menu.focus,2);
+ h.setNow(1540);h.menu.imu.move(1);assert.equal(h.menu.focus,3,'normal IMU selection is not given a key debounce');
 });
 
 test('separate swipes retain fourth-to-third viewport recovery and wrap-around',()=>{
  const h=fixture();
- for(const t of [1000,1280,1560]){h.setNow(t);h.key('ArrowRight');}
+ for(const t of [1000,1500,2000]){h.setNow(t);h.key('ArrowRight');}
  assert.equal(h.menu.focus,3);assert.ok(h.menu.menuScrollLeft>0);
- h.setNow(1840);h.key('ArrowLeft');assert.equal(h.menu.focus,2);assert.equal(h.menu.menuScrollLeft,0);
- for(const t of [2120,2400,2680]){h.setNow(t);h.key('ArrowLeft');}
+ h.setNow(2500);h.key('ArrowLeft');assert.equal(h.menu.focus,2);assert.equal(h.menu.menuScrollLeft,0);
+ for(const t of [3000,3500,4000]){h.setNow(t);h.key('ArrowLeft');}
  assert.equal(h.menu.focus,4);assert.ok(h.menu.menuScrollLeft>0);
 });

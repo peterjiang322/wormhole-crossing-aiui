@@ -2,7 +2,7 @@
   "tool": "@yodaos-pkg/aix-cli 0.10.1",
   "engine": "^0.19.1",
   "file": "dist/虫洞穿越.aix",
-  "bytes": 1196889,
-  "sha256": "b943d9336c0920c3ae7aab0e7fc1b716fcd8835ff701099717210471aa7b6b6d",
+  "bytes": 1196887,
+  "sha256": "8708c406cc06bb7c1fc992924dd0788aad67d70f30f246487581a812ba931b72",
   "deviceTested": false
 }

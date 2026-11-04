@@ -101,7 +101,7 @@ export default {
    <view class="mini-row"><card class="mini" bindtap="onRecenter"><text>重置朝向</text></card><card class="mini" bindtap="onPause"><text>暂停</text></card></view>
   </view>
   <view class="intro home-intro" style="display: {{phase === 'ready' && !settings ? 'flex' : 'none'}}">
-   <text class="eyebrow">SPATIAL JOY · FLIGHT EXPERIENCE</text><text class="hero">虫洞穿越</text><text class="sub">{{levelLabel}} · 每关45秒</text>
+   <text class="eyebrow">SPATIAL JOY · v1.4.4</text><text class="hero">虫洞穿越</text><text class="sub">{{levelLabel}} · 每关45秒</text>
    <view class="chips"><text>{{levelSummary}}</text></view>
   </view>
   <view class="intro" style="display: {{phase === 'levels' ? 'flex' : 'none'}}"><text class="eyebrow">自由选关 · 体验关 + 20关</text><text class="hero small">{{levelPreviewLabel}}</text><text class="sub">{{levelPreviewSummary}}</text><text class="tiny">左右选择 · 点头确认 · 无需解锁</text></view>
